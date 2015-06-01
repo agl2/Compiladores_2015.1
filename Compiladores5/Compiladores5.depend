@@ -65,25 +65,25 @@
 1432815983 source:h:\compiladores\compiladores5\pilha.c
 	"pilha.h"
 
-1432927135 source:/home/ary/Documentos/Compiladores2015.1/Compiladores5/arvore.c
+1432820590 source:c:\projetos\compiladores_2015.1\compiladores5\arvore.c
 	"arvore.h"
 
-1432927135 /home/ary/Documentos/Compiladores2015.1/Compiladores5/arvore.h
+1432820590 c:\projetos\compiladores_2015.1\compiladores5\arvore.h
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
 
-1432927135 source:/home/ary/Documentos/Compiladores2015.1/Compiladores5/main.c
+1432820992 source:c:\projetos\compiladores_2015.1\compiladores5\main.c
 	<stdio.h>
 	<stdlib.h>
 	"arvore.h"
 	"pilha.h"
 
-1432927135 /home/ary/Documentos/Compiladores2015.1/Compiladores5/pilha.h
+1432820708 c:\projetos\compiladores_2015.1\compiladores5\pilha.h
 	<stdio.h>
 	<stdlib.h>
 	"arvore.h"
 
-1432927135 source:/home/ary/Documentos/Compiladores2015.1/Compiladores5/pilha.c
+1432820592 source:c:\projetos\compiladores_2015.1\compiladores5\pilha.c
 	"pilha.h"
 
