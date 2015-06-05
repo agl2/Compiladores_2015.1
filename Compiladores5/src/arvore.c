@@ -1,16 +1,30 @@
 #include "../include/arvore.h"
 #define CHAR_NULL '\0'
 
-inline Celula* cria_celula_folha(char tipo, char mem) {
+inline Celula* cria_celula_folha(char tipo, char mem)
+{
     Celula* rt = (Celula*) malloc(sizeof(Celula));
     rt->tipo = tipo;
+    rt->inteiro = 0;
     rt->mem = mem;
     rt->filho_esq = NULL;
     rt->filho_dir = NULL;
     return rt;
 }
 
-inline Celula* cria_celula_derivacao(Celula* filho_esq, Celula* filho_dir) {
+inline Celula* cria_celula_folha_inteiro(int num, char mem)
+{
+    Celula* rt = (Celula*) malloc(sizeof(Celula));
+    rt->inteiro = num;
+    rt->tipo = '#'; //tipo vai ser inteiro
+    rt->mem = mem;
+    rt->filho_esq = NULL;
+    rt->filho_dir = NULL;
+    return rt;
+}
+
+inline Celula* cria_celula_derivacao(Celula* filho_esq, Celula* filho_dir)
+{
     Celula* rt = (Celula*) malloc(sizeof(Celula));
     rt->tipo = '@';
     rt->mem = CHAR_NULL;
@@ -19,15 +33,18 @@ inline Celula* cria_celula_derivacao(Celula* filho_esq, Celula* filho_dir) {
     return rt;
 }
 
-inline char* captura_string(char* str, int* i) {
+inline char* captura_string(char* str, int* i)
+{
     int nivel_parenteses = 0;
     char* rt;
     int inicial = *i;
     int n;
-    if(str[*i] == '(') {
+    if(str[*i] == '(')
+    {
         nivel_parenteses++;
     }
-    while(nivel_parenteses != 0) {
+    while(nivel_parenteses != 0)
+    {
         *i = *i + 1;
         if(str[*i] == ')') {
             nivel_parenteses--;
@@ -44,41 +61,96 @@ inline char* captura_string(char* str, int* i) {
 }
 
 
-Celula* monta_arvore(char* str) {
-
+Celula* monta_arvore(char* str)
+{
     int i;
     char* str_aux;
     Celula* it_aux = NULL;
     Celula* it = cria_celula_derivacao(NULL, NULL);
-
+    int aux;
     for(i = 0; str[i]!= CHAR_NULL; i++)
     {
         switch(str[i])
         {
             case '(' :
                 str_aux = captura_string(str, &i);
-                if(it->filho_esq == NULL) {
+                if(it->filho_esq == NULL)
+                {
                     it->filho_esq = monta_arvore(str_aux);
                 }
-                else if (it->filho_dir == NULL) {
+                else if (it->filho_dir == NULL)
+                {
                     it->filho_dir = monta_arvore(str_aux);
                 }
-                else {
+                else
+                {
                     it_aux = it;
                     it = cria_celula_derivacao(it_aux, monta_arvore(str_aux));
                 }
                 free(str_aux);
                 break;
             default:
-                if(it->filho_esq == NULL) {
-                    it->filho_esq = cria_celula_folha(str[i],CHAR_NULL);
+                if(it->filho_esq == NULL)
+                {
+                    if(isdigit(str[i]))
+                    {
+                        sscanf(str + i, "%d" ,&aux);
+                        while(isdigit(str[i])) i++;
+
+                        it->filho_esq = cria_celula_folha_inteiro(aux, CHAR_NULL);
+                        //if(str[i] != ' ')
+                        i--;
+                    }
+                    else
+                    {
+                        it->filho_esq = cria_celula_folha(str[i],CHAR_NULL);
+                        if(str[i] == '+' || str[i] == '/' || str[i] == '-' || str[i] == '^' || str[i] == '*' || str[i] == '<' || str[i] == '=')//essa condicao aqui eh pra quando tiver normal 1 + 2, para +1 2 tirar isso
+                        {
+                            Celula* aux_it_2 = it->filho_esq;
+                            it->filho_esq = it->filho_dir;
+                            it->filho_dir = aux_it_2;
+                        }
+                    }
                 }
-                else if (it->filho_dir == NULL) {
-                    it->filho_dir = cria_celula_folha(str[i],CHAR_NULL);
+                else if (it->filho_dir == NULL)
+                {
+                    if(isdigit(str[i]))
+                    {
+                        sscanf(str + i, "%d" ,&aux);
+                        while(isdigit(str[i])) i++;
+
+                        it->filho_dir = cria_celula_folha_inteiro(aux, CHAR_NULL);
+                        //if(str[i] != ' ')
+                        i--;
+                    }
+                    else
+                    {
+                        it->filho_dir = cria_celula_folha(str[i],CHAR_NULL);
+                        if(str[i] == '+' || str[i] == '/' || str[i] == '-' || str[i] == '^' || str[i] == '*' || str[i] == '<' || str[i] == '=')//essa condicao aqui eh pra quando tiver normal 1 + 2, para +1 2 tirar isso
+                        {
+                            Celula* aux_it_2 = it->filho_esq;
+                            it->filho_esq = it->filho_dir;
+                            it->filho_dir = aux_it_2;
+                        }
+                    }
                 }
-                else {
+                else
+                {
                     it_aux = it;
-                    it = cria_celula_derivacao(it_aux, cria_celula_folha(str[i], CHAR_NULL));
+
+                    if(isdigit(str[i]))
+                    {
+                        sscanf(str + i, "%d" ,&aux);
+                        while(isdigit(str[i])) i++;
+
+                        it = cria_celula_derivacao(it_aux, cria_celula_folha_inteiro(aux, CHAR_NULL));
+                        //if(str[i] != ' ')
+                        i--;
+                    }
+                    else
+                    {
+                        it = cria_celula_derivacao(it_aux, cria_celula_folha(str[i], CHAR_NULL));
+                    }
                 }
                 break;
         }
@@ -86,7 +158,8 @@ Celula* monta_arvore(char* str) {
     return it;
 }
 
-void imprime_arvore(Celula* raiz) {
+void imprime_arvore(Celula* raiz)
+{
     if(raiz->tipo == '@') {
         if(raiz->filho_esq != NULL)
             imprime_arvore(raiz->filho_esq);
@@ -99,7 +172,17 @@ void imprime_arvore(Celula* raiz) {
                 printf(")");
         }
     }
-    else {
-        printf("%c", raiz->tipo);
+    else
+    {
+        if(raiz->tipo == '#')
+        {
+            printf("%d", raiz->inteiro);
+        }
+        else
+        {
+            printf("%c", raiz->tipo);
+        }
+
     }
 }
+

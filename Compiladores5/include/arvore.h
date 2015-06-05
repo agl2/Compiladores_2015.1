@@ -5,8 +5,10 @@
 #include <string.h>
 
 
-typedef struct celula {
+typedef struct celula
+{
     char tipo;
+    int inteiro;
     char mem;
     struct celula* filho_esq;
     struct celula* filho_dir;

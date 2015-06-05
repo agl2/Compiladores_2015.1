@@ -5,7 +5,8 @@
 #include "arvore.h"
 #define TIPO Celula*
 
-typedef struct Pilha {
+typedef struct Pilha 
+{
     TIPO* dados;
     int tamanho;
     int ponteiro_posicao;
