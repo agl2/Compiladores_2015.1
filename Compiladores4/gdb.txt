@@ -1,0 +1,61 @@
+Ponto de parada 1 at 0x400f76: file src/main.c, line 24.
+Starting program: /home/ary/Documentos/Compiladores2015.1/Compiladores4/bin/executavel 
+
+Breakpoint 1, mg_v1 (raiz=raiz@entry=0x6070a0) at src/main.c:24
+warning: Source file is more recent than executable.
+24	        imprime_arvore(raiz);
+40	            case 'S':
+Currently logging to "gdb.txt".
+Logs will be appended to the log file.
+Output is being logged and displayed.
+Continuando.
+
+Breakpoint 1, mg_v1 (raiz=raiz@entry=0x6070a0) at src/main.c:24
+24	        imprime_arvore(raiz);
+Continuando.
+
+Breakpoint 1, mg_v1 (raiz=raiz@entry=0x6070a0) at src/main.c:24
+24	        imprime_arvore(raiz);
+Continuando.
+
+Breakpoint 1, mg_v1 (raiz=raiz@entry=0x6070a0) at src/main.c:24
+24	        imprime_arvore(raiz);
+Continuando.
+
+Breakpoint 1, mg_v1 (raiz=raiz@entry=0x6070a0) at src/main.c:24
+24	        imprime_arvore(raiz);
+Continuando.
+
+Breakpoint 1, mg_v1 (raiz=raiz@entry=0x6070a0) at src/main.c:24
+24	        imprime_arvore(raiz);
+Continuando.
+
+Breakpoint 1, mg_v1 (raiz=raiz@entry=0x6070a0) at src/main.c:24
+24	        imprime_arvore(raiz);
+Continuando.
+
+Breakpoint 1, mg_v1 (raiz=raiz@entry=0x6070a0) at src/main.c:24
+24	        imprime_arvore(raiz);
+Continuando.
+
+Breakpoint 1, mg_v1 (raiz=raiz@entry=0x6070a0) at src/main.c:24
+24	        imprime_arvore(raiz);
+Continuando.
+
+Breakpoint 1, mg_v1 (raiz=raiz@entry=0x6070a0) at src/main.c:24
+24	        imprime_arvore(raiz);
+command indefinido: "cc". Tente "help".
+Continuando.
+
+Breakpoint 1, mg_v1 (raiz=raiz@entry=0x6070a0) at src/main.c:24
+24	        imprime_arvore(raiz);
+Continuando.
+
+Breakpoint 1, mg_v1 (raiz=raiz@entry=0x6070a0) at src/main.c:24
+24	        imprime_arvore(raiz);
+Continuando.
+
+Program received signal SIGHUP, Hangup.
+0x00007ffff7b00870 in __write_nocancel ()
+    at ../sysdeps/unix/syscall-template.S:81
+81	../sysdeps/unix/syscall-template.S: Arquivo ou diretório não encontrado.
