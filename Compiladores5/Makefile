@@ -1,27 +1,13 @@
 FLAGS=-Wall -pg -c -O4
 FILE1=arvore
 FILE2=pilha
-SRC=$(wildcard src/*.c)
-OBJ=$(wildcard obj/*.o)
-
-define \n
-
-
-endef
+FILE3=main
+ 
 
 %: %.c
 	gcc $(FLAGS) $< -o $@.o
-
-all: obj_code bin_code
-
-clean: obj/$(FILE1).o obj/$(FILE2).o obj/$(FILE3).o
-	rm obj/$(FILE1).o 
-	rm obj/$(FILE2).o 
-	rm obj/$(FILE3).o
-	rm bin/executavel
-
-bin_code: $(OBJ)
-	gcc -pg -o bin/executavel $(OBJ)
-
-obj_code: $(SRC)
-	$(foreach var,$(SRC), gcc $(FLAGS) $(var) -o $(patsubst src/%.c,obj/%.o, $(var)) $(\n))
+all: $(FILE1).o $(FILE2).o $(FILE3).o
+	gcc $(FLAGS) $(FILE1).c -o $(FILE1).o
+	gcc $(FLAGS) $(FILE2).c -o $(FILE2).o
+	gcc $(FLAGS) $(FILE3).c -o $(FILE3).o
+	gcc -pg -o executavel $(FILE1).o $(FILE2).o $(FILE3).o
