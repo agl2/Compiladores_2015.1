@@ -1,4 +1,4 @@
-#include "pilha.h"
+#include "../include/pilha.h"
 
 inline int pilha_vazia(Pilha* p) {
     if(p->ponteiro_posicao > -1) {

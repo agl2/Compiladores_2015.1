@@ -1,4 +1,4 @@
-#include "arvore.h"
+#include "../include/arvore.h"
 #define CHAR_NULL '\0'
 
 inline Celula* cria_celula_folha(char tipo, char mem) {
