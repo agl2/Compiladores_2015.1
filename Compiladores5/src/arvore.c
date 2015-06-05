@@ -104,7 +104,7 @@ Celula* monta_arvore(char* str)
                     else
                     {
                         it->filho_esq = cria_celula_folha(str[i],CHAR_NULL);
-                        if(str[i] == '+' || str[i] == '/' || str[i] == '-' || str[i] == '^' || str[i] == '*' || str[i] == '<' || str[i] == '=')//essa condicao aqui eh pra quando tiver normal 1 + 2, para +1 2 tirar isso
+                        if(str[i] == '+' || str[i] == '/' || str[i] == '-' || str[i] == '^' || str[i] == '*' || str[i] == '<' || str[i] == '=')//essa condicao aqui eh para transformar 1 + 2, para +1 2
                         {
                             Celula* aux_it_2 = it->filho_esq;
                             it->filho_esq = it->filho_dir;

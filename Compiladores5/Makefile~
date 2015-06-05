@@ -1,4 +1,4 @@
-FLAGS=-Wall -pg -c -O4
+FLAGS=-Wall -pg -c -O4 -g
 FILE1=arvore
 FILE2=pilha
 FILE3=main
