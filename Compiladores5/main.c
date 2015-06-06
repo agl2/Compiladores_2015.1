@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "arvore.h"
+#include <ctype.h>
 #include <math.h>
-#include "../include/arvore.h"
-#include "../include/pilha.h"
+#include "pilha.h"
 #define TRUE 1
 #define FALSE 0
 #define N 50000000
 
-int tamanho_heap;
+int tamanho_heap = 1000000;
 /*
                         UNIVERSIDADE FEDERAL DE PERNAMBUCO
                               CENTRO DE INFORMATICA
@@ -17,15 +18,15 @@ int tamanho_heap;
                               RAFAEL NUNES DE LIMA
 
 
-K a b => a
-S a b c => (ac)(bc)
-I a => a
-B f g x => f (gx)
-C f x y => f y x
+K a b => a ok
+S a b c => (ac)(bc) ok
+I a => a ok
+B f g x => f (gx) ok
+C f x y => f y x ok
 s a b c d => a (bd)(cd)
-b a b c d => a b (c d)
-c a b c d => a (b d) c
-
+b a b c d => a b (c d) ok
+c a b c d => a (b d) c ok
+Y x => x (Y x) ok
 */
 
 Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
@@ -34,6 +35,8 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
     Celula* ant[] = {NULL, NULL, NULL, NULL};// VETOR PARA GUARDAR OS TRES NOS ANTERIORES QUANDO SE DESCE NO GRAFO
     int fim = FALSE;
     int i;
+    Celula* copia;
+    Celula* aux;
 
     while (!fim)
     {
@@ -44,7 +47,18 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             ant[1] = ant[0];
             ant[0] = it;
         } // faz a busca em profundidade
-
+        ///AQUI SERVE PRA ENTRAR NA LISTA
+        aux = raiz;
+        for(;aux->filho_esq == NULL && raiz->filho_dir != NULL;)
+        {
+            if(raiz->filho_dir->tipo == '$')
+            {
+                raiz->filho_dir->filho_esq = mg_v1(raiz->filho_dir->filho_esq);
+            }
+            raiz = raiz->filho_dir;
+        }
+        raiz = aux;
+        ///------------------------------------
         switch(it->tipo)
         {
         case 'K':
@@ -62,6 +76,17 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
                 raiz = ant[0]->filho_dir;
             }
             break;
+        case 'Y':
+            if(ant[0] == NULL)  // encontrou um K (Sair do la?o)
+            {
+                fim = TRUE;
+                break;
+            }
+            copia = copia_arvore(ant[0]->filho_dir); //criar copia de ant[0]->filho_dir
+            Celula* nova = cria_celula_derivacao(ant[0]->filho_esq, copia);
+            ant[0]->filho_esq = ant[0]->filho_dir;
+            ant[0]->filho_dir = nova;
+        break;
         case 'F':
             if(ant[1] == NULL)  // encontrou um K (Sair do la?o)
             {
@@ -87,8 +112,9 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             ant[1]->filho_esq = ant[0]->filho_dir;
             ant[0]->filho_esq = ant[1]->filho_dir;
             ant[0]->filho_dir = ant[2]->filho_dir;
+            copia = copia_arvore(ant[0]->filho_dir);
             ant[2]->filho_dir = ant[0];
-            ant[1]->filho_dir = ant[0]->filho_dir;
+            ant[1]->filho_dir = copia;
             break;
 
         case 'I':
@@ -135,11 +161,13 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
                 fim = TRUE;
                 break;
             }
+            //s a b c d => a (bd)(cd)
             ant[2]->filho_esq = ant[0]->filho_dir;
             ant[0]->filho_esq = ant[2]->filho_dir;
             ant[0]->filho_dir = ant[3]->filho_dir;
             ant[1]->filho_esq = ant[1]->filho_dir;
-            ant[1]->filho_dir = ant[3]->filho_dir;
+            copia = copia_arvore(ant[3]->filho_dir);
+            ant[1]->filho_dir = copia;
             ant[3]->filho_dir = ant[0];
             ant[2]->filho_dir = ant[1];
             break;
@@ -190,7 +218,6 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             }
         break;
         case '-':
-            imprime_arvore(raiz);
             if(ant[0]->filho_dir->tipo == '@')
             {
                 ant[0]->filho_dir = mg_v1(ant[0]->filho_dir);
@@ -386,7 +413,6 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             {
                 ant[1]->filho_dir = mg_v1(ant[1]->filho_dir);
             }
-
             ant[0]->tipo = '$';
             ant[0]->filho_esq = ant[0]->filho_dir;
             ant[0]->filho_dir = ant[1]->filho_dir;
@@ -409,7 +435,9 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
         {
             ant[i] = NULL;
         }
+
     }
+
     return raiz;
 }
 
@@ -977,16 +1005,16 @@ Celula* mg_v2(Celula* raiz)// MAQUINA DE GRAFO COM PILHA
             ant[i] = NULL;
         }
     }
+
     return raiz;
 }
 
 int main()
 {
-    //char str[] = "(H[(H[(2+1),2]),1])";
-    char str[] = "K(T([1,2]:(T[1,[40],3])))a";
+    char str[] = "[(H[1,2]),2]";
+    inicia_heap(tamanho_heap);
     Celula* raiz = monta_arvore(str);
     raiz = mg_v1(raiz);
     imprime_arvore(raiz);
-
     return 0;
 }
