@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../include/arvore.h"
-#include "../include/pilha.h"
+#include "arvore.h"
+#include "pilha.h"
 #define TRUE 1
 #define FALSE 0
 #define N 50000000
@@ -33,9 +33,7 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
     Celula* ant[] = {NULL, NULL, NULL, NULL};// VETOR PARA GUARDAR OS TRES NOS ANTERIORES QUANDO SE DESCE NO GRAFO
     int fim = FALSE;
     int i;
-    int numero1;
-    int numero2;
-    int total;
+
     while (!fim)
     {
         for(it = raiz; it->filho_esq != NULL; it = it->filho_esq)
@@ -79,6 +77,7 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             }
             break;
         case 'S':
+
             if(ant[2] == NULL)
             {
                 fim = TRUE;
@@ -116,6 +115,7 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             ant[1]->filho_dir = ant[2]->filho_dir;
             ant[2]->filho_dir = ant[1];
             ant[2]->filho_esq = ant[0]->filho_dir;
+
             break;
         case 'C':
             if(ant[2] == NULL)
@@ -189,6 +189,7 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             }
         break;
         case '-':
+            imprime_arvore(raiz);
             if(ant[0]->filho_dir->tipo == '@')
             {
                 ant[0]->filho_dir = mg_v1(ant[0]->filho_dir);
@@ -331,8 +332,73 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
                 raiz->filho_dir = NULL;
                 raiz->filho_esq = NULL;
             }
-        break;
+            break;
+        case 'H':
+            if(ant[0] == NULL)
+            {
+                fim = TRUE;
+                break;
+            }
+            if(ant[0]->filho_dir->tipo == '@')
+            {
+                ant[0]->filho_dir = mg_v1(ant[0]->filho_dir);
+            }
+            if(ant[0] != raiz)
+            {
+                ant[1]->filho_esq = ant[0]->filho_dir->filho_esq;
+            }
+            else
+            {
+                raiz = raiz->filho_dir->filho_esq;
+            }
+            break;
+        case 'T':
+            if(ant[0] == NULL)
+            {
+                fim = TRUE;
+                break;
+            }
+            if(ant[0]->filho_dir->tipo == '@')
+            {
+                ant[0]->filho_dir = mg_v1(ant[0]->filho_dir);
+            }
+            if(ant[0] != raiz)
+            {
+                ant[1]->filho_esq = ant[0]->filho_dir->filho_dir;
+            }
+            else
+            {
+                raiz = raiz->filho_dir->filho_dir;
+            }
+            break;
+        case ':':
+            if(ant[1] == NULL)
+            {
+                fim = TRUE;
+                break;
+            }
+            if(ant[0]->filho_dir->tipo == '@')
+            {
+                ant[0]->filho_dir = mg_v1(ant[0]->filho_dir);
+            }
+            if(ant[1]->filho_dir->tipo == '@')
+            {
+                ant[1]->filho_dir = mg_v1(ant[1]->filho_dir);
+            }
 
+            ant[0]->tipo = '$';
+            ant[0]->filho_esq = ant[0]->filho_dir;
+            ant[0]->filho_dir = ant[1]->filho_dir;
+
+            if(ant[1] != raiz)
+            {
+                ant[2]->filho_esq = ant[0];
+            }
+            else
+            {
+                raiz = ant[0];
+            }
+            break;
         default:
             fim = TRUE;
             break;
@@ -360,7 +426,7 @@ Celula* mg_v2(Celula* raiz)// MAQUINA DE GRAFO COM PILHA
     {
         for(it = pilha_topo(p); it->filho_esq != NULL; it = it->filho_esq) //
         {
-            if(it != pilha_topo(p) && it->tipo == '@' )
+            if(it != pilha_topo(p) && (it->tipo == '@' || it->tipo == '#'))
             {
                 pilha_insere(p, it);
             }
@@ -398,6 +464,40 @@ Celula* mg_v2(Celula* raiz)// MAQUINA DE GRAFO COM PILHA
             else
             {
                 ant[1]->filho_esq = ant[0]->filho_dir;
+                ant[1]->filho_dir = NULL;
+            }
+
+            break;
+        case 'F':
+            for(i=0; i < 2; i++)
+            {
+                if(!pilha_vazia(p))
+                {
+                    ant[i] = pilha_topo(p);
+                    if(i!=1) pilha_retira(p);
+                }
+                else
+                {
+                    fim = TRUE;
+                }
+            }
+            if(fim) break;
+
+            if(ant[1] != raiz)
+            {
+                if(pilha_vazia(p))
+                {
+                    fim = TRUE;
+                    break;
+                }
+
+                pilha_retira(p);
+                ant[2] = pilha_topo(p);
+                ant[2]->filho_esq = ant[1]->filho_dir;
+            }
+            else
+            {
+                ant[1]->filho_esq = ant[1]->filho_dir;
                 ant[1]->filho_dir = NULL;
             }
 
@@ -866,7 +966,6 @@ Celula* mg_v2(Celula* raiz)// MAQUINA DE GRAFO COM PILHA
                 fim = TRUE; ///nao sei pq precisa disso, mas sei q só funciona com isso
             }
             break;
-
         default:
             fim = TRUE;
             break;
@@ -877,14 +976,16 @@ Celula* mg_v2(Celula* raiz)// MAQUINA DE GRAFO COM PILHA
             ant[i] = NULL;
         }
     }
+    return raiz;
 }
 
 int main()
 {
-    char str[] = "(8/(8/2))";
+    //char str[] = "(H[(H[(2+1),2]),1])";
+    char str[] = "K(T([1,2]:(T[1,[40],3])))a";
     Celula* raiz = monta_arvore(str);
-
     raiz = mg_v1(raiz);
     imprime_arvore(raiz);
+
     return 0;
 }

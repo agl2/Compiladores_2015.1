@@ -1,4 +1,4 @@
-#include "../include/pilha.h"
+#include "pilha.h"
 
 inline int pilha_vazia(Pilha* p) 
 {
