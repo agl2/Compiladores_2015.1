@@ -5,9 +5,9 @@
 #include <string.h>
 #include <ctype.h>
 #define CHAR_NULL '\0'
-#define GREEN (char) 0
-#define RED (char) 1
-#define YELLOW (char) 2
+#define VERDE (char) 0
+#define VERMELHO (char) 1
+#define AMARELO (char) 2
 
 typedef struct celula
 {
@@ -21,7 +21,8 @@ typedef struct celula
 
 Celula* lista_celulas_livres;
 Celula** heap;
-Celula* raiz;
+Celula* raiz_geral;
+int tam_heap;
 
 inline Celula* cria_celula_folha(char tipo);
 
@@ -43,6 +44,12 @@ inline void inicia_heap(int tamanho_heap);
 
 inline Celula* aloca_celula();
 
-inline int mark_scan();
+inline void inicia_mark_scan(Celula* raiz, int tam);
+
+int mark_scan();
+
+void marque_verde(Celula *raiz);
+
+inline void checa_raiz(Celula* raiz, Celula* nova);
 
 #endif // ARVORE_H_INCLUDED

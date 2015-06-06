@@ -1,28 +1,74 @@
 #include "arvore.h"
 
+inline void inicia_mark_scan (Celula* raiz, int tam) {
+    raiz_geral = raiz;
+    tam_heap = tam;
+}
+
+inline void checa_raiz(Celula* raiz, Celula* nova) {
+        if(raiz == raiz_geral) {
+            raiz_geral = nova;
+        }
+}
+
 inline Celula* cria_celula() {
     Celula* rt = (Celula*) malloc(sizeof(Celula));
     rt->tipo = CHAR_NULL;
     rt->inteiro = 0;
-    rt->mem = YELLOW;
+    rt->mem = AMARELO;
     rt->filho_esq = NULL;
     rt->filho_dir = NULL;
     return rt;
 }
 
-inline int mark_scan() {
-    return 0;
+void marque_verde(Celula* raiz) {
+    raiz->mem = VERDE;
+    if(raiz->filho_esq != NULL) {
+        marque_verde(raiz->filho_esq);
+    }
+    if(raiz->filho_dir != NULL) {
+        marque_verde(raiz->filho_dir);
+    }
+}
+
+int mark_scan() {
+    int i;
+    int num_celulas_desalocadas = 0;
+    marque_verde(raiz_geral);
+    Celula* prox = NULL;
+    for(i = tam_heap - 1; i >= 0; i--) {
+
+        if(heap[i]->mem == VERDE) {
+            heap[i]->mem = VERMELHO;
+        }
+        else if(heap[i]->mem == VERMELHO) {
+            num_celulas_desalocadas++;
+            heap[i]->mem = AMARELO;
+            lista_celulas_livres = heap[i];
+            lista_celulas_livres->prox = prox;
+            prox = lista_celulas_livres;
+        }
+    }
+    return num_celulas_desalocadas;
 }
 
 inline Celula* aloca_celula() {
     if(lista_celulas_livres == NULL) {
-        if(!mark_scan()) {
+        printf("Chamou mark_scan\n");
+        imprime_arvore(raiz_geral);
+        printf("\n");
+        if(mark_scan() == 0) {
             printf("Erro 1: Falta de celulas\n");
             exit(1);
         }
+        printf("Encontrou celulas livres\n");
     }
     Celula* rt = lista_celulas_livres;
-    rt->mem = RED;
+    if(rt->mem != AMARELO) {
+        printf("Erro 2: Tentando alocar celula ja alocada\n");
+        exit(2);
+    }
+    rt->mem = VERMELHO;
     lista_celulas_livres = lista_celulas_livres->prox;
     return rt;
 }
@@ -67,11 +113,9 @@ inline Celula* cria_celula_derivacao(Celula* filho_esq, Celula* filho_dir)
 }
 inline Celula* cria_celula_lista()
 {
-    Celula* rt = lista_celulas_livres;
-    lista_celulas_livres = lista_celulas_livres->prox;
+    Celula* rt = aloca_celula();
     rt->inteiro = 0;
     rt->tipo = '$'; //tipo vai ser inteiro
-    rt->mem = CHAR_NULL;
     rt->filho_esq = NULL;
     rt->filho_dir = NULL;
     return rt;

@@ -8,7 +8,7 @@
 #define FALSE 0
 #define N 50000000
 
-int tamanho_heap = 1000000;
+int tamanho_heap = 11;
 /*
                         UNIVERSIDADE FEDERAL DE PERNAMBUCO
                               CENTRO DE INFORMATICA
@@ -55,8 +55,10 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             {
                 raiz->filho_dir->filho_esq = mg_v1(raiz->filho_dir->filho_esq);
             }
+            checa_raiz(raiz, raiz->filho_dir);
             raiz = raiz->filho_dir;
         }
+        checa_raiz(raiz, aux);
         raiz = aux;
         ///------------------------------------
         switch(it->tipo)
@@ -73,6 +75,7 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             }
             else //Aplica a regra e reduz a Ka
             {
+                checa_raiz(raiz, ant[0]->filho_dir);
                 raiz = ant[0]->filho_dir;
             }
             break;
@@ -99,6 +102,7 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             }
             else //Aplica a regra e reduz a Ka
             {
+                checa_raiz(raiz, ant[1]->filho_dir);
                 raiz = ant[1]->filho_dir;
             }
             break;
@@ -109,10 +113,10 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
                 fim = TRUE;
                 break;
             }
+            copia = copia_arvore(ant[2]->filho_dir);
             ant[1]->filho_esq = ant[0]->filho_dir;
             ant[0]->filho_esq = ant[1]->filho_dir;
             ant[0]->filho_dir = ant[2]->filho_dir;
-            copia = copia_arvore(ant[0]->filho_dir);
             ant[2]->filho_dir = ant[0];
             ant[1]->filho_dir = copia;
             break;
@@ -129,6 +133,7 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             }
             else
             {
+                checa_raiz(raiz, raiz->filho_dir);
                 raiz = raiz->filho_dir;
             }
             break;
@@ -162,11 +167,11 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
                 break;
             }
             //s a b c d => a (bd)(cd)
+            copia = copia_arvore(ant[3]->filho_dir);
             ant[2]->filho_esq = ant[0]->filho_dir;
             ant[0]->filho_esq = ant[2]->filho_dir;
             ant[0]->filho_dir = ant[3]->filho_dir;
             ant[1]->filho_esq = ant[1]->filho_dir;
-            copia = copia_arvore(ant[3]->filho_dir);
             ant[1]->filho_dir = copia;
             ant[3]->filho_dir = ant[0];
             ant[2]->filho_dir = ant[1];
@@ -212,6 +217,7 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             }
             else //Aplica a regra e reduz a Ka
             {
+                checa_raiz(raiz, ant[0]->filho_dir);
                 raiz = ant[0]->filho_dir;
                 raiz->filho_dir = NULL;
                 raiz->filho_esq = NULL;
@@ -234,6 +240,7 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             }
             else //Aplica a regra e reduz a Ka
             {
+                checa_raiz(raiz, ant[0]->filho_dir);
                 raiz = ant[0]->filho_dir;
                 raiz->filho_dir = NULL;
                 raiz->filho_esq = NULL;
@@ -256,6 +263,7 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             }
             else //Aplica a regra e reduz a Ka
             {
+                checa_raiz(raiz, ant[0]->filho_dir);
                 raiz = ant[0]->filho_dir;
                 raiz->filho_dir = NULL;
                 raiz->filho_esq = NULL;
@@ -278,6 +286,7 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             }
             else //Aplica a regra e reduz a Ka
             {
+                checa_raiz(raiz, ant[0]->filho_dir);
                 raiz = ant[0]->filho_dir;
                 raiz->filho_dir = NULL;
                 raiz->filho_esq = NULL;
@@ -300,6 +309,7 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             }
             else //Aplica a regra e reduz a Ka
             {
+                checa_raiz(raiz, ant[0]->filho_dir);
                 raiz = ant[0]->filho_dir;
                 raiz->filho_dir = NULL;
                 raiz->filho_esq = NULL;
@@ -328,6 +338,7 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             }
             else //Aplica a regra e reduz a Ka
             {
+                checa_raiz(raiz, ant[0]->filho_dir);
                 raiz = ant[0]->filho_dir;
                 raiz->filho_dir = NULL;
                 raiz->filho_esq = NULL;
@@ -356,6 +367,7 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             }
             else //Aplica a regra e reduz a Ka
             {
+                checa_raiz(raiz, ant[0]->filho_dir);
                 raiz = ant[0]->filho_dir;
                 raiz->filho_dir = NULL;
                 raiz->filho_esq = NULL;
@@ -377,6 +389,7 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             }
             else
             {
+                checa_raiz(raiz, raiz->filho_dir->filho_esq);
                 raiz = raiz->filho_dir->filho_esq;
             }
             break;
@@ -396,6 +409,7 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             }
             else
             {
+                checa_raiz(raiz, raiz->filho_dir->filho_esq);
                 raiz = raiz->filho_dir->filho_dir;
             }
             break;
@@ -423,6 +437,7 @@ Celula* mg_v1 (Celula* raiz) //MAQUINDA DE GRAFO SEM PILHA
             }
             else
             {
+                checa_raiz(raiz, ant[0]);
                 raiz = ant[0];
             }
             break;
@@ -717,6 +732,7 @@ Celula* mg_v2(Celula* raiz)// MAQUINA DE GRAFO COM PILHA
             }
             else //Aplica a regra e reduz a Ka
             {
+                checa_raiz(raiz, ant[0]->filho_dir);
                 raiz = ant[0]->filho_dir;
                 raiz->filho_dir = NULL;
                 raiz->filho_esq = NULL;
@@ -760,6 +776,7 @@ Celula* mg_v2(Celula* raiz)// MAQUINA DE GRAFO COM PILHA
             }
             else //Aplica a regra e reduz a Ka
             {
+                checa_raiz(raiz, ant[0]->filho_dir);
                 raiz = ant[0]->filho_dir;
                 raiz->filho_dir = NULL;
                 raiz->filho_esq = NULL;
@@ -803,6 +820,7 @@ Celula* mg_v2(Celula* raiz)// MAQUINA DE GRAFO COM PILHA
             }
             else //Aplica a regra e reduz a Ka
             {
+                checa_raiz(raiz, ant[0]->filho_dir);
                 raiz = ant[0]->filho_dir;
                 raiz->filho_dir = NULL;
                 raiz->filho_esq = NULL;
@@ -846,6 +864,7 @@ Celula* mg_v2(Celula* raiz)// MAQUINA DE GRAFO COM PILHA
             }
             else //Aplica a regra e reduz a Ka
             {
+                checa_raiz(raiz, ant[0]->filho_dir);
                 raiz = ant[0]->filho_dir;
                 raiz->filho_dir = NULL;
                 raiz->filho_esq = NULL;
@@ -889,6 +908,7 @@ Celula* mg_v2(Celula* raiz)// MAQUINA DE GRAFO COM PILHA
             }
             else //Aplica a regra e reduz a Ka
             {
+                checa_raiz(raiz, ant[0]->filho_dir);
                 raiz = ant[0]->filho_dir;
                 raiz->filho_dir = NULL;
                 raiz->filho_esq = NULL;
@@ -939,6 +959,7 @@ Celula* mg_v2(Celula* raiz)// MAQUINA DE GRAFO COM PILHA
             }
             else //Aplica a regra e reduz a Ka
             {
+                checa_raiz(raiz, ant[0]->filho_dir);
                 raiz = ant[0]->filho_dir;
                 raiz->filho_dir = NULL;
                 raiz->filho_esq = NULL;
@@ -989,6 +1010,7 @@ Celula* mg_v2(Celula* raiz)// MAQUINA DE GRAFO COM PILHA
             }
             else //Aplica a regra e reduz a Ka
             {
+                checa_raiz(raiz, ant[0]->filho_dir);
                 raiz = ant[0]->filho_dir;
                 raiz->filho_dir = NULL;
                 raiz->filho_esq = NULL;
@@ -1011,10 +1033,12 @@ Celula* mg_v2(Celula* raiz)// MAQUINA DE GRAFO COM PILHA
 
 int main()
 {
-    char str[] = "[(H[1,2]),2]";
+    char str[] = "K(Sabc)f";
     inicia_heap(tamanho_heap);
     Celula* raiz = monta_arvore(str);
+    inicia_mark_scan(raiz, tamanho_heap);
     raiz = mg_v1(raiz);
     imprime_arvore(raiz);
+    printf("\n");
     return 0;
 }
