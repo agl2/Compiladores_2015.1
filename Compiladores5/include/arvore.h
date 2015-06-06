@@ -24,5 +24,8 @@ Celula* monta_arvore(char* str);
 
 void imprime_arvore(Celula* raiz);
 
+//inline int isdigit(char c);
+
+void imprime_lista(Celula *raiz);
 
 #endif // ARVORE_H_INCLUDED

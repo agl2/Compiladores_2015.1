@@ -1,4 +1,5 @@
-#include "arvore.h"
+#include "../include/arvore.h"
+
 #define CHAR_NULL '\0'
 
 inline Celula* cria_celula_folha(char tipo, char mem)
@@ -105,6 +106,11 @@ inline char* captura_string(char* str, int* i)
     return rt;
 }
 
+inline int eh_digito(char c) {
+    if('0' <= c && c <= '9') return 1;
+    else return 0;
+}
+
 
 Celula* monta_arvore(char* str)
 {
@@ -145,11 +151,11 @@ Celula* monta_arvore(char* str)
 						{
 							it->filho_dir = cria_celula_lista();
 							it->filho_dir->filho_esq = (Celula*) malloc(sizeof(Celula));
-                            if(isdigit(str[i]))
+                            if(eh_digito(str[i]))
                             {
                                 sscanf(str+i, "%d" ,&it->filho_dir->filho_esq->inteiro);
                                 it->filho_dir->filho_esq->tipo = '#';
-                                while(isdigit(str[i])) i++;
+                                while(eh_digito(str[i])) i++;
                                 i--;
 							}
 							else
@@ -199,10 +205,10 @@ Celula* monta_arvore(char* str)
             default:
                 if(it->filho_esq == NULL)
                 {
-                    if(isdigit(str[i]))
+                    if(eh_digito(str[i]))
                     {
                         sscanf(str + i, "%d" ,&aux);
-                        while(isdigit(str[i])) i++;
+                        while(eh_digito(str[i])) i++;
 
                         it->filho_esq = cria_celula_folha_inteiro(aux, CHAR_NULL);
                         i--;
@@ -214,10 +220,10 @@ Celula* monta_arvore(char* str)
                 }
                 else if (it->filho_dir == NULL)
                 {
-                    if(isdigit(str[i]))
+                    if(eh_digito(str[i]))
                     {
                         sscanf(str + i, "%d" ,&aux);
-                        while(isdigit(str[i])) i++;
+                        while(eh_digito(str[i])) i++;
 
                         it->filho_dir = cria_celula_folha_inteiro(aux, CHAR_NULL);
                         i--;
@@ -237,10 +243,10 @@ Celula* monta_arvore(char* str)
                 {
                     it_aux = it;
 
-                    if(isdigit(str[i]))
+                    if(eh_digito(str[i]))
                     {
                         sscanf(str + i, "%d" ,&aux);
-                        while(isdigit(str[i])) i++;
+                        while(eh_digito(str[i])) i++;
 
                         it = cria_celula_derivacao(it_aux, cria_celula_folha_inteiro(aux, CHAR_NULL));
                         i--;

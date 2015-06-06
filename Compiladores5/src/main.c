@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "arvore.h"
-#include "pilha.h"
+#include <math.h>
+#include "../include/arvore.h"
+#include "../include/pilha.h"
 #define TRUE 1
 #define FALSE 0
 #define N 50000000

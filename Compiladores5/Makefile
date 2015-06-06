@@ -1,4 +1,4 @@
-FLAGS=-Wall -pg -c -O4 -std=c++11
+FLAGS=-Wall -pg -c -O4
 SRC=$(wildcard src/*.c)
 OBJ=$(wildcard obj/*.o)
 CC=g++
@@ -8,8 +8,8 @@ define \n
 
 endef
 
-#%: %.c
-#	gcc $(FLAGS) $< -o $@.o
+%: %.c
+	gcc $(FLAGS) $< -o $@.o
 
 all: obj_code bin_code
 
