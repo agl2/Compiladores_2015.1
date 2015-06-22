@@ -1,44 +1,147 @@
 #include "../include/arvore.h"
 
-#define CHAR_NULL '\0'
+void testa_celulas_livres (int num, Pilha* raizes) {
 
-inline Celula* cria_celula_folha(char tipo, char mem)
+	Celula* it = lista_celulas_livres;
+	int i;
+    int rodou_gc = 0;
+	for(i = 0; i < num; i++) {
+		if(it == NULL) {
+            if(rodou_gc == 1) {
+                printf("Erro 1: Falta de celulas\n");
+                exit(1);
+            }
+			if(mark_scan(raizes) == 0)
+			{
+			    printf("Erro 1: Falta de celulas\n");
+			    exit(1);
+			}
+            rodou_gc = 1;
+			it = lista_celulas_livres;
+			i = 0;
+		}
+        it = it->prox;
+	}
+}
+
+inline Celula* cria_celula()
 {
     Celula* rt = (Celula*) malloc(sizeof(Celula));
+    rt->tipo = CHAR_NULL;
+    rt->inteiro = 0;
+    rt->mem = AMARELO;
+    rt->filho_esq = NULL;
+    rt->filho_dir = NULL;
+    return rt;
+}
+
+void marque_verde(Celula* raiz)
+{
+    raiz->mem = VERDE;
+    if(raiz->filho_esq != NULL )
+    {
+        if(raiz->filho_esq->mem != VERDE) marque_verde(raiz->filho_esq);
+    }
+    if(raiz->filho_dir != NULL )
+    {
+        if(raiz->filho_dir->mem != VERDE) marque_verde(raiz->filho_dir);
+    }
+}
+
+int mark_scan(Pilha* raizes)
+{
+    printf("mark_scan\n");
+    int i;
+    int num_celulas_desalocadas = 0;
+    Bloco* aux = raizes->cabeca;
+    while(aux != NULL) {
+        marque_verde(aux->dado);
+        aux = aux->anterior;
+    }
+    Celula* prox = NULL;
+    for(i = tam_heap - 1; i >= 0; i--)
+    {
+
+        if(heap[i]->mem == VERDE)
+        {
+            heap[i]->mem = VERMELHO;
+        }
+        else if(heap[i]->mem == VERMELHO)
+        {
+            num_celulas_desalocadas++;
+            heap[i]->mem = AMARELO;
+            lista_celulas_livres = heap[i];
+            lista_celulas_livres->prox = prox;
+            prox = lista_celulas_livres;
+        }
+    }
+    return num_celulas_desalocadas;
+}
+
+inline Celula* aloca_celula()
+{
+    if(lista_celulas_livres == NULL)
+    {
+        printf("Erro 1: Falta de celulas\n");
+        exit(1);
+    }
+    Celula* rt = lista_celulas_livres;
+    if(rt->mem != AMARELO)
+    {
+        printf("Erro 2: Tentando alocar celula ja alocada\n");
+        exit(2);
+    }
+    rt->mem = VERMELHO;
+    lista_celulas_livres = lista_celulas_livres->prox;
+    return rt;
+}
+
+inline void inicia_heap(int tamanho_heap)
+{
+    int i;
+    Celula* prox = NULL;
+    heap = (Celula**) malloc(tamanho_heap*sizeof(Celula*));
+    tam_heap = tamanho_heap;
+    for(i = tamanho_heap-1; i >= 0; i--)
+    {
+        heap[i] = cria_celula();
+        lista_celulas_livres = heap[i];
+        lista_celulas_livres->prox = prox;
+        prox = lista_celulas_livres;
+    }
+}
+
+inline Celula* cria_celula_folha(char tipo)
+{
+    Celula* rt = aloca_celula();
     rt->tipo = tipo;
     rt->inteiro = 0;
-    rt->mem = mem;
     rt->filho_esq = NULL;
     rt->filho_dir = NULL;
     return rt;
 }
-
-inline Celula* cria_celula_folha_inteiro(int num, char mem)
+inline Celula* cria_celula_folha_inteiro(int num)
 {
-    Celula* rt = (Celula*) malloc(sizeof(Celula));
+    Celula* rt = aloca_celula();
     rt->inteiro = num;
     rt->tipo = '#'; //tipo vai ser inteiro
-    rt->mem = mem;
     rt->filho_esq = NULL;
     rt->filho_dir = NULL;
     return rt;
 }
-
 inline Celula* cria_celula_derivacao(Celula* filho_esq, Celula* filho_dir)
 {
-    Celula* rt = (Celula*) malloc(sizeof(Celula));
+    Celula* rt = aloca_celula();
     rt->tipo = '@';
-    rt->mem = CHAR_NULL;
     rt->filho_esq = filho_esq;
     rt->filho_dir = filho_dir;
     return rt;
 }
 inline Celula* cria_celula_lista()
 {
-    Celula* rt = (Celula*) malloc(sizeof(Celula));
+    Celula* rt = aloca_celula();
     rt->inteiro = 0;
     rt->tipo = '$'; //tipo vai ser inteiro
-    rt->mem = CHAR_NULL;
     rt->filho_esq = NULL;
     rt->filho_dir = NULL;
     return rt;
@@ -53,7 +156,6 @@ inline char* captura_string_colchete(char* str, int* i)
     if(str[*i] == '[')
     {
         nivel_colchete++;
-
     }
     while(nivel_colchete != 0)
     {
@@ -71,14 +173,11 @@ inline char* captura_string_colchete(char* str, int* i)
     }
 
     n = *i - inicial;
-    rt = (char*) malloc(sizeof(char)*(n+2));
-    strncpy(rt, str+inicial, n+2);
-    int j;
-    char aux;
-    rt[n+1] = CHAR_NULL;
+    rt = (char*) malloc(sizeof(char)*(n + 2));
+    strncpy(rt, str + inicial, n + 2);
+    rt[n + 1] = CHAR_NULL;
     return rt;
 }
-
 inline char* captura_string(char* str, int* i)
 {
     int nivel_parenteses = 0;
@@ -92,10 +191,12 @@ inline char* captura_string(char* str, int* i)
     while(nivel_parenteses != 0)
     {
         *i = *i + 1;
-        if(str[*i] == ')') {
+        if(str[*i] == ')')
+        {
             nivel_parenteses--;
         }
-        else if(str[*i] == '(') {
+        else if(str[*i] == '(')
+        {
             nivel_parenteses++;
         }
     }
@@ -106,11 +207,46 @@ inline char* captura_string(char* str, int* i)
     return rt;
 }
 
-inline int eh_digito(char c) {
-    if('0' <= c && c <= '9') return 1;
-    else return 0;
+Celula* copia_arvore(Celula* original)
+{
+    Celula* copia;
+    if(original->tipo == '@')
+    {
+        copia = cria_celula_derivacao(NULL, NULL);
+        if(original->filho_esq != NULL)
+        {
+            copia->filho_esq = copia_arvore(original->filho_esq);
+        }
+        if(original->filho_dir != NULL)
+        {
+            copia->filho_dir = copia_arvore(original->filho_dir);
+        }
+    }
+    else if (original->tipo == '$')
+    {
+        copia = cria_celula_lista();
+        if(original->filho_esq != NULL)
+        {
+            copia->filho_esq = copia_arvore(original->filho_esq);
+        }
+        if(original->filho_dir != NULL)
+        {
+            copia->filho_dir = copia_arvore(original->filho_dir);
+        }
+    }
+    else
+    {
+        if(original->tipo == '#')
+        {
+            copia = cria_celula_folha_inteiro(original->inteiro);
+        }
+        else
+        {
+            copia = cria_celula_folha(original->tipo);
+        }
+    }
+    return copia;
 }
-
 
 Celula* monta_arvore(char* str)
 {
@@ -123,152 +259,162 @@ Celula* monta_arvore(char* str)
     {
         switch(str[i])
         {
-            case '(' :
-                str_aux = captura_string(str, &i);
-                if(it->filho_esq == NULL)
-                {
-                    it->filho_esq = monta_arvore(str_aux);
-                }
-                else if (it->filho_dir == NULL)
-                {
-                    it->filho_dir = monta_arvore(str_aux);
-                }
-                else
-                {
-                    it_aux = it;
-                    it = cria_celula_derivacao(it_aux, monta_arvore(str_aux));
-                }
-                free(str_aux);
-                break;
-            ///BAGUNCA DE RAFAEL
-            case '[':
+        case '(' :
+            str_aux = captura_string(str, &i);
+            if(it->filho_esq == NULL)
+            {
+                it->filho_esq = monta_arvore(str_aux);
+            }
+            else if (it->filho_dir == NULL)
+            {
+                it->filho_dir = monta_arvore(str_aux);
+            }
+            else
+            {
                 it_aux = it;
-                if(it->filho_dir== NULL)
+                it = cria_celula_derivacao(it_aux, monta_arvore(str_aux));
+            }
+            free(str_aux);
+            break;
+        ///BAGUNCA DE RAFAEL
+        case '[':
+            it_aux = it;
+            if(it->filho_dir== NULL)
+            {
+                for(i = i + 1; str[i]!= ']'; i++)
                 {
-                    for(i = i + 1; str[i]!= ']'; i++)
+                    if(str[i]!= ',' && str[i] != '('&&str[i]!='[')
                     {
-						if(str[i]!= ',' && str[i] != '('&&str[i]!='[')
-						{
-							it->filho_dir = cria_celula_lista();
-							it->filho_dir->filho_esq = (Celula*) malloc(sizeof(Celula));
-                            if(eh_digito(str[i]))
-                            {
-                                sscanf(str+i, "%d" ,&it->filho_dir->filho_esq->inteiro);
-                                it->filho_dir->filho_esq->tipo = '#';
-                                while(eh_digito(str[i])) i++;
-                                i--;
-							}
-							else
-							{
-								it->filho_dir->filho_esq->tipo = str[i];
-								it->filho_dir->filho_esq->inteiro = 0;
-							}
-							it->filho_dir->filho_esq->filho_dir=NULL;
-							it->filho_dir->filho_esq->filho_esq=NULL;
+                        it->filho_dir = cria_celula_lista();
 
-							it = it->filho_dir;
-						}
-						else if(str[i] == '(')
+                        if(isdigit(str[i]))
                         {
-                            it->filho_dir = cria_celula_lista();
-                            str_aux = captura_string(str, &i);
-                            it->filho_dir->filho_esq =  monta_arvore(str_aux);
-                            it = it->filho_dir;
+                            int inteiroAux;
+                            sscanf(str+i, "%d" ,&inteiroAux);
+                            it->filho_dir->filho_esq = cria_celula_folha_inteiro(inteiroAux);
+                            while(isdigit(str[i])) i++;
+                            i--;
                         }
-                        else if(str[i]=='[')
+                        else
                         {
-                          it->filho_dir = cria_celula_lista();
-                          str_aux = captura_string_colchete(str, &i);
-                          it->filho_dir->filho_esq = monta_arvore(str_aux);
-                          it = it->filho_dir;
+                            it->filho_dir->filho_esq = cria_celula_folha(str[i]);
                         }
+                        it = it->filho_dir;
                     }
-                    it->filho_dir = (Celula*) malloc(sizeof(Celula));
-                    it->filho_dir->tipo = ']';//representa lista vazia
-                    it->filho_dir->inteiro = 0;
-                    it->filho_dir->filho_esq=NULL;
-                    it->filho_dir->filho_dir=NULL;
+                    else if(str[i] == '(')
+                    {
+                        it->filho_dir = cria_celula_lista();
+                        str_aux = captura_string(str, &i);
+                        it->filho_dir->filho_esq =  monta_arvore(str_aux);
+                        it = it->filho_dir;
+                    }
+                    else if(str[i]=='[')
+                    {
+                        it->filho_dir = cria_celula_lista();
+                        str_aux = captura_string_colchete(str, &i);
+                        it->filho_dir->filho_esq = monta_arvore(str_aux);
+                        it = it->filho_dir;
+                    }
                 }
-                else
+                it->filho_dir = cria_celula_folha(']');
+            }
+            else
+            {
+                Celula* aux2 = cria_celula_derivacao(it, NULL);
+                it_aux = aux2;
+                i--;
+            }
+            it = it_aux;
+            break;
+        ///TERMINA A BAGUNCA
+        default:
+            if(it->filho_esq == NULL)
+            {
+                if(isdigit(str[i]))
                 {
-                    Celula* aux2 = (Celula*) malloc(sizeof(Celula));
-                    aux2->tipo = '@';
-                    aux2->mem = CHAR_NULL;
-                    aux2->filho_esq = it;
-                    aux2->filho_dir = NULL;
-                    it_aux = aux2;
+                    sscanf(str + i, "%d" ,&aux);
+                    while(isdigit(str[i])) i++;
+
+                    it->filho_esq = cria_celula_folha_inteiro(aux);
                     i--;
                 }
-                it = it_aux;
-                break;
-            ///TERMINA A BAGUNCA
-            default:
-                if(it->filho_esq == NULL)
+                else
                 {
-                    if(eh_digito(str[i]))
-                    {
-                        sscanf(str + i, "%d" ,&aux);
-                        while(eh_digito(str[i])) i++;
-
-                        it->filho_esq = cria_celula_folha_inteiro(aux, CHAR_NULL);
-                        i--;
-                    }
-                    else
-                    {
-                        it->filho_esq = cria_celula_folha(str[i],CHAR_NULL);
-                    }
+                    it->filho_esq = cria_celula_folha(str[i]);
                 }
-                else if (it->filho_dir == NULL)
+            }
+            else if (it->filho_dir == NULL)
+            {
+                if(isdigit(str[i]))
                 {
-                    if(eh_digito(str[i]))
-                    {
-                        sscanf(str + i, "%d" ,&aux);
-                        while(eh_digito(str[i])) i++;
+                    sscanf(str + i, "%d" ,&aux);
+                    while(isdigit(str[i])) i++;
 
-                        it->filho_dir = cria_celula_folha_inteiro(aux, CHAR_NULL);
-                        i--;
-                    }
-                    else
+                    it->filho_dir = cria_celula_folha_inteiro(aux);
+                    if(str[i] != ' ')
                     {
-                        it->filho_dir = cria_celula_folha(str[i],CHAR_NULL);
-                        if(str[i] == '+' || str[i] == '/' || str[i] == '-' || str[i] == '^' || str[i] == '*' || str[i] == '<' || str[i] == '=' || str[i] == ':')//essa condicao aqui eh pra quando tiver normal 1 + 2, para +1 2 tirar isso
-                        {
-                            Celula* aux_it_2 = it->filho_esq;
-                            it->filho_esq = it->filho_dir;
-                            it->filho_dir = aux_it_2;
-                        }
+                        i--;
                     }
                 }
                 else
                 {
-                    it_aux = it;
+                    it->filho_dir = cria_celula_folha(str[i]);
+                }
+            }
+            else
+            {
+                it_aux = it;
 
-                    if(eh_digito(str[i]))
+                if(isdigit(str[i]))
+                {
+                    sscanf(str + i, "%d" ,&aux);
+                    while(isdigit(str[i])) i++;
+
+                    it = cria_celula_derivacao(it_aux, cria_celula_folha_inteiro(aux));
+                    if(str[i] != ' ')
                     {
-                        sscanf(str + i, "%d" ,&aux);
-                        while(eh_digito(str[i])) i++;
-
-                        it = cria_celula_derivacao(it_aux, cria_celula_folha_inteiro(aux, CHAR_NULL));
                         i--;
                     }
-                    else
-                    {
-                        it = cria_celula_derivacao(it_aux, cria_celula_folha(str[i], CHAR_NULL));
-                    }
+
                 }
-                break;
+                else
+                {
+                    it = cria_celula_derivacao( it_aux, cria_celula_folha(str[i]) ) ;
+                }
+            }
+            break;
         }
     }
     return it;
 }
 
+void imprime_lista(Celula *raiz)
+{
+    if(raiz->tipo == '$')
+    {
+        if(raiz->filho_esq != NULL)
+            imprime_lista(raiz->filho_esq);
+        if(raiz->filho_dir != NULL)
+            imprime_lista(raiz->filho_dir);
+    }
+    else if(raiz->tipo=='@')
+        imprime_arvore(raiz);
+    else
+    {
+        if(raiz->tipo == '#')
+            printf("%d ", raiz->inteiro);
+        else
+            printf("%c", raiz->tipo);
+    }
+}
 void imprime_arvore(Celula* raiz)
 {
     if(raiz->tipo == '@')
     {
         if(raiz->filho_esq != NULL)
+        {
             imprime_arvore(raiz->filho_esq);
-
+        }
         if(raiz->filho_dir != NULL)
         {
             if(raiz->filho_dir->tipo == '@')
@@ -280,8 +426,6 @@ void imprime_arvore(Celula* raiz)
             {
                 printf(")");
             }
-
-
         }
     }
     else if (raiz->tipo=='$')
@@ -293,46 +437,8 @@ void imprime_arvore(Celula* raiz)
     else
     {
         if(raiz->tipo == '#')
-        {
             printf("%d", raiz->inteiro);
-        }
         else
-        {
             printf("%c", raiz->tipo);
-        }
-
     }
-}
-void imprime_lista(Celula *raiz)
-{
-        if(raiz->tipo == '$')
-    {
-
-        if(raiz->filho_esq != NULL)
-            imprime_lista(raiz->filho_esq);
-
-        if(raiz->filho_dir != NULL)
-        {
-            imprime_lista(raiz->filho_dir);
-
-
-        }
-    }
-    else if(raiz->tipo=='@')
-    {
-        imprime_arvore(raiz);
-    }
-    else
-    {
-        if(raiz->tipo == '#')
-        {
-            printf("%d ", raiz->inteiro);
-        }
-        else
-        {
-            printf("%c", raiz->tipo);
-        }
-
-    }
-
 }

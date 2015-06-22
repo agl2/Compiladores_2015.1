@@ -1,4 +1,4 @@
-#include "../include/pilha.h"
+#include "pilha.h"
 
 inline int pilha_vazia(Pilha* p) {
     if(p->tamanho == 0) {
@@ -30,6 +30,7 @@ inline void pilha_retira(Pilha* p)
     }
     else {
         printf("Tentando retirar de pilha vazia\n");
+        exit(1);
     }
 }
 
@@ -38,8 +39,8 @@ inline TIPO pilha_topo(Pilha* p) {
         return p->cabeca->dado;
     }
     else {
-        return NULL;
         printf("Tentando acessar pilha vazia\n");
+        exit(1);
     }
 }
 

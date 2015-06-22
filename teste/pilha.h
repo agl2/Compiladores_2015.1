@@ -2,8 +2,7 @@
 #define PILHA_H_INCLUDED
 #include <stdio.h>
 #include <stdlib.h>
-#include "celula.h"
-#define TIPO Celula*
+#define TIPO int
 
 typedef struct bloco {
     TIPO dado;

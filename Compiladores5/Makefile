@@ -1,24 +1,24 @@
-FLAGS=-Wall -pg -c -O4
+FLAGS=-Wall -O4
 SRC=$(wildcard src/*.c)
 OBJ=$(wildcard obj/*.o)
-CC=g++
-
+CC=gcc
+LIBS=-lm
 define \n
 
 
 endef
 
 %: %.c
-	gcc $(FLAGS) $< -o $@.o
+	%(CC) $(FLAGS) $< -o $@.o
 
 all: obj_code bin_code
 
 clean: obj/$(FILE1).o obj/$(FILE2).o obj/$(FILE3).o
 	$(foreach var, $(OBJ), rm var)
-	rm bin/executavel
+	rm -rf bin/executavel
 
 bin_code: $(OBJ)
-	$(CC) -pg -o bin/executavel $(OBJ)
+	$(CC) $(FLAGS) -o bin/executavel $(OBJ) $(LIBS)
 
 obj_code: $(SRC)
-	$(foreach var,$(SRC), $(CC) $(FLAGS) $(var) -o $(patsubst src/%.c,obj/%.o, $(var)) $(\n))
+	$(foreach var,$(SRC), $(CC) $(FLAGS) -c $(var) -o $(patsubst src/%.c,obj/%.o, $(var)) $(\n))

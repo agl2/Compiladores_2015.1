@@ -2,18 +2,13 @@
 #define PILHA_H_INCLUDED
 #include <stdio.h>
 #include <stdlib.h>
-#include "celula.h"
+#include "arvore.h"
 #define TIPO Celula*
 
-typedef struct bloco {
-    TIPO dado;
-    struct bloco* anterior;
-} Bloco;
-
-typedef struct pilha
-{
-	Bloco* cabeca;
-	int tamanho;
+typedef struct Pilha {
+    TIPO* dados;
+    int tamanho;
+    int ponteiro_posicao;
 } Pilha;
 
 
