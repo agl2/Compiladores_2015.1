@@ -11,12 +11,13 @@ void yyerror(char* s);
 	char *id;
 }
 
+%start programa
 %token 	IF ELSE AND OR TAIL HEAD EQ
-%token <bool> BOOLEAN;
-%token <number> NUMBER;
-%token <str> STRING;
-%token <id> ID;
-%token NEW_LINE;
+%token <bool> BOOLEAN
+%token <number> NUMBER
+%token <str> STRING
+%token <id> ID
+%token NEW_LINE
 
 
 %%
