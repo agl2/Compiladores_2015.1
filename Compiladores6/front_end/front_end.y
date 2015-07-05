@@ -12,7 +12,6 @@ int i = 0;
 
 %union{
 	int number;
-	int bool;
 	char *str;
 	char *id;
 	Funcao* funcao;
@@ -21,20 +20,27 @@ int i = 0;
 }
 
 %start variavel_inicial
-%token 	IF ELSE AND OR TAIL HEAD EQ
-%token <bool> BOOLEAN
+%token 	IF ELSE TAIL HEAD EQ
 %token <number> NUMBER
 %token <str> STRING
 %token <id> ID
 %token NEW_LINE
+%token TRUE
+%token FALSE
 
 %type <funcao> def_func
 %type <brackets> parametros
-%type <codigo> expressao_num
-%type <codigo> elemento
+
+%type <codigo> comando
+
+%type <codigo> expressao
 %type <codigo> termo
 %type <codigo> fator
-%type <codigo> exponente
+%type <codigo> exponente_comparacao
+
+%type <codigo> elemento
+
+%left EQ '<'
 
 
 %%
@@ -48,40 +54,50 @@ programa:
 	;
 
 def_func:
-	ID parametros '=' expressao_num 	{$$ = nova_funcao($1, $2, $4);}
+	ID parametros '=' comando 		{$$ = nova_funcao($1, $2, $4);}
 	;
 
 parametros:
-	ID parametros						{fila_insere($2, $1); $$ = $2;}
-	| ID 								{Fila *nova; nova = fila_cria(); fila_insere(nova, $1); $$ = nova;}
+	ID parametros					{fila_insere($2, $1); $$ = $2;}
+	| ID 							{Fila *nova; nova = fila_cria(); fila_insere(nova, $1); $$ = nova;}
 	;
 
+comando:
+	expressao				{$$ = $1;}
+	| IF '(' expressao ')' '{' comando '}' ELSE '{' comando '}'  {$$ = nova_celula_deriv(nova_celula_deriv($3, $6) , $10);}
+	;
 
-expressao_num:
-	expressao_num '+' termo		{$$ = nova_celula_deriv(nova_celula_deriv(nova_celula_terminal_S(strdup("+")), $1) , $3);}
-	| expressao_num '-' termo 	{$$ = nova_celula_deriv(nova_celula_deriv(nova_celula_terminal_S(strdup("-")), $1) , $3);}
-	| termo						{$$ = $1;}
+expressao:
+	expressao '+' termo				{$$ = nova_celula_deriv(nova_celula_deriv(nova_celula_terminal_S(strdup("+")), $1) , $3);}
+	| expressao '-' termo 			{$$ = nova_celula_deriv(nova_celula_deriv(nova_celula_terminal_S(strdup("-")), $1) , $3);}
+	| expressao '|' termo			{$$ = nova_celula_deriv(nova_celula_deriv($1, nova_celula_terminal_S(strdup("K"))) , $3);}
+	| termo								{$$ = $1;}
 	;
 
 termo:
-	termo '*' exponente			{$$ = nova_celula_deriv(nova_celula_deriv(nova_celula_terminal_S(strdup("*")), $1) , $3);}
-	| termo '/' exponente		{$$ = nova_celula_deriv(nova_celula_deriv(nova_celula_terminal_S(strdup("/")), $1) , $3);}
-	| exponente					{$$ = $1;}
+	termo '*' exponente_comparacao						{$$ = nova_celula_deriv(nova_celula_deriv(nova_celula_terminal_S(strdup("*")), $1) , $3);}
+	| termo '/' exponente_comparacao						{$$ = nova_celula_deriv(nova_celula_deriv(nova_celula_terminal_S(strdup("/")), $1) , $3);}
+	| termo '&' exponente_comparacao			{$$ = nova_celula_deriv(nova_celula_deriv($1, $3) , nova_celula_terminal_S(strdup("F")) );}
+	| exponente_comparacao								{$$ = $1;}
 	;
 
-exponente:
-	exponente '^' fator			{$$ = nova_celula_deriv(nova_celula_deriv(nova_celula_terminal_S(strdup("^")), $1) , $3);}
-	| fator						{$$ = $1;}
+exponente_comparacao:
+	exponente_comparacao '^' fator			{$$ = nova_celula_deriv(nova_celula_deriv(nova_celula_terminal_S(strdup("^")), $1) , $3);}
+	| fator EQ fator 						{$$ = nova_celula_deriv(nova_celula_deriv(nova_celula_terminal_S(strdup("=")), $1) , $3);}				
+	| fator '<' fator 						{$$ = nova_celula_deriv(nova_celula_deriv(nova_celula_terminal_S(strdup("<")), $1) , $3);}
+	| fator									{$$ = $1;}
 	;
 
 fator:
-	'(' expressao_num ')'		{$$ = $2;}
-	| elemento					{$$ = $1;}
+	'(' expressao ')'		{$$ = $2;}
+	| elemento				{$$ = $1;}
 	;
 
 elemento: 
 	NUMBER 								{$$ = nova_celula_terminal_I($1);}
 	| ID 								{$$ = nova_celula_terminal_S($1);}
+	| TRUE								{$$ = nova_celula_terminal_S(strdup("K"));}
+	| FALSE								{$$ = nova_celula_terminal_S(strdup("F"));}
 	;
 %%
 

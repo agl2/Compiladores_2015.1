@@ -1202,7 +1202,9 @@ int main()
     //char str[] = ":1[(H[1,2])]"; //ver esse caso depois
     //char str [] = "(S(S(KS)(S(KK)(S(K-)(I))))(KI))9 2";
     //char str[] = "(+(+(+1 1)(+1 1)) 2)";
-    char str[] = "C(BB(B+(C(B^I)2)))(C(B^I)2)3 4";
+    //char str[] = "C(BB(B+(C(B^I)2)))(C(B^I)2)3 4";
+    char str [1000];
+    fgets(str, 1000, stdin);
     Celula* raiz = monta_arvore(str);
     raizes = pilha_cria();
     raiz = mg_v2(raiz);

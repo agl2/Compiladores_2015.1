@@ -1,13 +1,7 @@
 Terminais não utilizados na gramática
 
-   IF
-   ELSE
-   AND
-   OR
    TAIL
    HEAD
-   EQ
-   BOOLEAN
    STRING
 
 
@@ -20,77 +14,92 @@ Gramática
     2 programa: def_func NEW_LINE programa
     3         | def_func
 
-    4 def_func: ID parametros '=' expressao_num
+    4 def_func: ID parametros '=' comando
 
     5 parametros: ID parametros
     6           | ID
 
-    7 expressao_num: expressao_num '+' termo
-    8              | expressao_num '-' termo
-    9              | termo
+    7 comando: expressao
+    8        | IF '(' expressao ')' '{' comando '}' ELSE '{' comando '}'
 
-   10 termo: termo '*' exponente
-   11      | termo '/' exponente
-   12      | exponente
+    9 expressao: expressao '+' termo
+   10          | expressao '-' termo
+   11          | expressao '|' termo
+   12          | termo
 
-   13 exponente: exponente '^' fator
-   14          | fator
+   13 termo: termo '*' exponente_comparacao
+   14      | termo '/' exponente_comparacao
+   15      | termo '&' exponente_comparacao
+   16      | exponente_comparacao
 
-   15 fator: '(' expressao_num ')'
-   16      | elemento
+   17 exponente_comparacao: exponente_comparacao '^' fator
+   18                     | fator EQ fator
+   19                     | fator '<' fator
+   20                     | fator
 
-   17 elemento: NUMBER
-   18         | ID
+   21 fator: '(' expressao ')'
+   22      | elemento
+
+   23 elemento: NUMBER
+   24         | ID
+   25         | TRUE
+   26         | FALSE
 
 
 Terminais, com as regras onde eles aparecem
 
 $end (0) 0
-'(' (40) 15
-')' (41) 15
-'*' (42) 10
-'+' (43) 7
-'-' (45) 8
-'/' (47) 11
+'&' (38) 15
+'(' (40) 8 21
+')' (41) 8 21
+'*' (42) 13
+'+' (43) 9
+'-' (45) 10
+'/' (47) 14
+'<' (60) 19
 '=' (61) 4
-'^' (94) 13
+'^' (94) 17
+'{' (123) 8
+'|' (124) 11
+'}' (125) 8
 error (256)
-IF (258)
-ELSE (259)
-AND (260)
-OR (261)
-TAIL (262)
-HEAD (263)
-EQ (264)
-BOOLEAN (265)
-NUMBER (266) 17
-STRING (267)
-ID (268) 4 5 6 18
-NEW_LINE (269) 2
+IF (258) 8
+ELSE (259) 8
+TAIL (260)
+HEAD (261)
+EQ (262) 18
+NUMBER (263) 23
+STRING (264)
+ID (265) 4 5 6 24
+NEW_LINE (266) 2
+TRUE (267) 25
+FALSE (268) 26
 
 
 Não-terminais com as regras onde eles aparecem
 
-$accept (23)
+$accept (27)
     à esquerda: 0
-variavel_inicial (24)
+variavel_inicial (28)
     à esquerda: 1, à direita: 0
-programa (25)
+programa (29)
     à esquerda: 2 3, à direita: 1 2
-def_func (26)
+def_func (30)
     à esquerda: 4, à direita: 2 3
-parametros (27)
+parametros (31)
     à esquerda: 5 6, à direita: 4 5
-expressao_num (28)
-    à esquerda: 7 8 9, à direita: 4 7 8 15
-termo (29)
-    à esquerda: 10 11 12, à direita: 7 8 9 10 11
-exponente (30)
-    à esquerda: 13 14, à direita: 10 11 12 13
-fator (31)
-    à esquerda: 15 16, à direita: 13 14
-elemento (32)
-    à esquerda: 17 18, à direita: 16
+comando (32)
+    à esquerda: 7 8, à direita: 4 8
+expressao (33)
+    à esquerda: 9 10 11 12, à direita: 7 8 9 10 11 21
+termo (34)
+    à esquerda: 13 14 15 16, à direita: 9 10 11 12 13 14 15
+exponente_comparacao (35)
+    à esquerda: 17 18 19 20, à direita: 13 14 15 16 17
+fator (36)
+    à esquerda: 21 22, à direita: 17 18 19 20
+elemento (37)
+    à esquerda: 23 24 25 26, à direita: 22
 
 
 State 0
@@ -106,7 +115,7 @@ State 0
 
 State 1
 
-    4 def_func: ID . parametros '=' expressao_num
+    4 def_func: ID . parametros '=' comando
 
     ID  deslocar, e ir ao estado 5
 
@@ -151,7 +160,7 @@ State 5
 
 State 6
 
-    4 def_func: ID parametros . '=' expressao_num
+    4 def_func: ID parametros . '=' comando
 
     '='  deslocar, e ir ao estado 10
 
@@ -182,17 +191,21 @@ State 9
 
 State 10
 
-    4 def_func: ID parametros '=' . expressao_num
+    4 def_func: ID parametros '=' . comando
 
-    NUMBER  deslocar, e ir ao estado 12
-    ID      deslocar, e ir ao estado 13
-    '('     deslocar, e ir ao estado 14
+    IF      deslocar, e ir ao estado 12
+    NUMBER  deslocar, e ir ao estado 13
+    ID      deslocar, e ir ao estado 14
+    TRUE    deslocar, e ir ao estado 15
+    FALSE   deslocar, e ir ao estado 16
+    '('     deslocar, e ir ao estado 17
 
-    expressao_num  ir ao estado 15
-    termo          ir ao estado 16
-    exponente      ir ao estado 17
-    fator          ir ao estado 18
-    elemento       ir ao estado 19
+    comando               ir ao estado 18
+    expressao             ir ao estado 19
+    termo                 ir ao estado 20
+    exponente_comparacao  ir ao estado 21
+    fator                 ir ao estado 22
+    elemento              ir ao estado 23
 
 
 State 11
@@ -204,211 +217,473 @@ State 11
 
 State 12
 
-   17 elemento: NUMBER .
+    8 comando: IF . '(' expressao ')' '{' comando '}' ELSE '{' comando '}'
 
-    $padrão  reduzir usando a regra 17 (elemento)
+    '('  deslocar, e ir ao estado 24
 
 
 State 13
 
-   18 elemento: ID .
+   23 elemento: NUMBER .
 
-    $padrão  reduzir usando a regra 18 (elemento)
+    $padrão  reduzir usando a regra 23 (elemento)
 
 
 State 14
 
-   15 fator: '(' . expressao_num ')'
+   24 elemento: ID .
 
-    NUMBER  deslocar, e ir ao estado 12
-    ID      deslocar, e ir ao estado 13
-    '('     deslocar, e ir ao estado 14
-
-    expressao_num  ir ao estado 20
-    termo          ir ao estado 16
-    exponente      ir ao estado 17
-    fator          ir ao estado 18
-    elemento       ir ao estado 19
+    $padrão  reduzir usando a regra 24 (elemento)
 
 
 State 15
 
-    4 def_func: ID parametros '=' expressao_num .
-    7 expressao_num: expressao_num . '+' termo
-    8              | expressao_num . '-' termo
+   25 elemento: TRUE .
 
-    '+'  deslocar, e ir ao estado 21
-    '-'  deslocar, e ir ao estado 22
-
-    $padrão  reduzir usando a regra 4 (def_func)
+    $padrão  reduzir usando a regra 25 (elemento)
 
 
 State 16
 
-    9 expressao_num: termo .
-   10 termo: termo . '*' exponente
-   11      | termo . '/' exponente
+   26 elemento: FALSE .
 
-    '*'  deslocar, e ir ao estado 23
-    '/'  deslocar, e ir ao estado 24
-
-    $padrão  reduzir usando a regra 9 (expressao_num)
+    $padrão  reduzir usando a regra 26 (elemento)
 
 
 State 17
 
-   12 termo: exponente .
-   13 exponente: exponente . '^' fator
+   21 fator: '(' . expressao ')'
 
-    '^'  deslocar, e ir ao estado 25
+    NUMBER  deslocar, e ir ao estado 13
+    ID      deslocar, e ir ao estado 14
+    TRUE    deslocar, e ir ao estado 15
+    FALSE   deslocar, e ir ao estado 16
+    '('     deslocar, e ir ao estado 17
 
-    $padrão  reduzir usando a regra 12 (termo)
+    expressao             ir ao estado 25
+    termo                 ir ao estado 20
+    exponente_comparacao  ir ao estado 21
+    fator                 ir ao estado 22
+    elemento              ir ao estado 23
 
 
 State 18
 
-   14 exponente: fator .
+    4 def_func: ID parametros '=' comando .
 
-    $padrão  reduzir usando a regra 14 (exponente)
+    $padrão  reduzir usando a regra 4 (def_func)
 
 
 State 19
 
-   16 fator: elemento .
+    7 comando: expressao .
+    9 expressao: expressao . '+' termo
+   10          | expressao . '-' termo
+   11          | expressao . '|' termo
 
-    $padrão  reduzir usando a regra 16 (fator)
+    '+'  deslocar, e ir ao estado 26
+    '-'  deslocar, e ir ao estado 27
+    '|'  deslocar, e ir ao estado 28
+
+    $padrão  reduzir usando a regra 7 (comando)
 
 
 State 20
 
-    7 expressao_num: expressao_num . '+' termo
-    8              | expressao_num . '-' termo
-   15 fator: '(' expressao_num . ')'
+   12 expressao: termo .
+   13 termo: termo . '*' exponente_comparacao
+   14      | termo . '/' exponente_comparacao
+   15      | termo . '&' exponente_comparacao
 
-    '+'  deslocar, e ir ao estado 21
-    '-'  deslocar, e ir ao estado 22
-    ')'  deslocar, e ir ao estado 26
+    '*'  deslocar, e ir ao estado 29
+    '/'  deslocar, e ir ao estado 30
+    '&'  deslocar, e ir ao estado 31
+
+    $padrão  reduzir usando a regra 12 (expressao)
 
 
 State 21
 
-    7 expressao_num: expressao_num '+' . termo
+   16 termo: exponente_comparacao .
+   17 exponente_comparacao: exponente_comparacao . '^' fator
 
-    NUMBER  deslocar, e ir ao estado 12
-    ID      deslocar, e ir ao estado 13
-    '('     deslocar, e ir ao estado 14
+    '^'  deslocar, e ir ao estado 32
 
-    termo      ir ao estado 27
-    exponente  ir ao estado 17
-    fator      ir ao estado 18
-    elemento   ir ao estado 19
+    $padrão  reduzir usando a regra 16 (termo)
 
 
 State 22
 
-    8 expressao_num: expressao_num '-' . termo
+   18 exponente_comparacao: fator . EQ fator
+   19                     | fator . '<' fator
+   20                     | fator .
 
-    NUMBER  deslocar, e ir ao estado 12
-    ID      deslocar, e ir ao estado 13
-    '('     deslocar, e ir ao estado 14
+    EQ   deslocar, e ir ao estado 33
+    '<'  deslocar, e ir ao estado 34
 
-    termo      ir ao estado 28
-    exponente  ir ao estado 17
-    fator      ir ao estado 18
-    elemento   ir ao estado 19
+    $padrão  reduzir usando a regra 20 (exponente_comparacao)
 
 
 State 23
 
-   10 termo: termo '*' . exponente
+   22 fator: elemento .
 
-    NUMBER  deslocar, e ir ao estado 12
-    ID      deslocar, e ir ao estado 13
-    '('     deslocar, e ir ao estado 14
-
-    exponente  ir ao estado 29
-    fator      ir ao estado 18
-    elemento   ir ao estado 19
+    $padrão  reduzir usando a regra 22 (fator)
 
 
 State 24
 
-   11 termo: termo '/' . exponente
+    8 comando: IF '(' . expressao ')' '{' comando '}' ELSE '{' comando '}'
 
-    NUMBER  deslocar, e ir ao estado 12
-    ID      deslocar, e ir ao estado 13
-    '('     deslocar, e ir ao estado 14
+    NUMBER  deslocar, e ir ao estado 13
+    ID      deslocar, e ir ao estado 14
+    TRUE    deslocar, e ir ao estado 15
+    FALSE   deslocar, e ir ao estado 16
+    '('     deslocar, e ir ao estado 17
 
-    exponente  ir ao estado 30
-    fator      ir ao estado 18
-    elemento   ir ao estado 19
+    expressao             ir ao estado 35
+    termo                 ir ao estado 20
+    exponente_comparacao  ir ao estado 21
+    fator                 ir ao estado 22
+    elemento              ir ao estado 23
 
 
 State 25
 
-   13 exponente: exponente '^' . fator
+    9 expressao: expressao . '+' termo
+   10          | expressao . '-' termo
+   11          | expressao . '|' termo
+   21 fator: '(' expressao . ')'
 
-    NUMBER  deslocar, e ir ao estado 12
-    ID      deslocar, e ir ao estado 13
-    '('     deslocar, e ir ao estado 14
-
-    fator     ir ao estado 31
-    elemento  ir ao estado 19
+    ')'  deslocar, e ir ao estado 36
+    '+'  deslocar, e ir ao estado 26
+    '-'  deslocar, e ir ao estado 27
+    '|'  deslocar, e ir ao estado 28
 
 
 State 26
 
-   15 fator: '(' expressao_num ')' .
+    9 expressao: expressao '+' . termo
 
-    $padrão  reduzir usando a regra 15 (fator)
+    NUMBER  deslocar, e ir ao estado 13
+    ID      deslocar, e ir ao estado 14
+    TRUE    deslocar, e ir ao estado 15
+    FALSE   deslocar, e ir ao estado 16
+    '('     deslocar, e ir ao estado 17
+
+    termo                 ir ao estado 37
+    exponente_comparacao  ir ao estado 21
+    fator                 ir ao estado 22
+    elemento              ir ao estado 23
 
 
 State 27
 
-    7 expressao_num: expressao_num '+' termo .
-   10 termo: termo . '*' exponente
-   11      | termo . '/' exponente
+   10 expressao: expressao '-' . termo
 
-    '*'  deslocar, e ir ao estado 23
-    '/'  deslocar, e ir ao estado 24
+    NUMBER  deslocar, e ir ao estado 13
+    ID      deslocar, e ir ao estado 14
+    TRUE    deslocar, e ir ao estado 15
+    FALSE   deslocar, e ir ao estado 16
+    '('     deslocar, e ir ao estado 17
 
-    $padrão  reduzir usando a regra 7 (expressao_num)
+    termo                 ir ao estado 38
+    exponente_comparacao  ir ao estado 21
+    fator                 ir ao estado 22
+    elemento              ir ao estado 23
 
 
 State 28
 
-    8 expressao_num: expressao_num '-' termo .
-   10 termo: termo . '*' exponente
-   11      | termo . '/' exponente
+   11 expressao: expressao '|' . termo
 
-    '*'  deslocar, e ir ao estado 23
-    '/'  deslocar, e ir ao estado 24
+    NUMBER  deslocar, e ir ao estado 13
+    ID      deslocar, e ir ao estado 14
+    TRUE    deslocar, e ir ao estado 15
+    FALSE   deslocar, e ir ao estado 16
+    '('     deslocar, e ir ao estado 17
 
-    $padrão  reduzir usando a regra 8 (expressao_num)
+    termo                 ir ao estado 39
+    exponente_comparacao  ir ao estado 21
+    fator                 ir ao estado 22
+    elemento              ir ao estado 23
 
 
 State 29
 
-   10 termo: termo '*' exponente .
-   13 exponente: exponente . '^' fator
+   13 termo: termo '*' . exponente_comparacao
 
-    '^'  deslocar, e ir ao estado 25
+    NUMBER  deslocar, e ir ao estado 13
+    ID      deslocar, e ir ao estado 14
+    TRUE    deslocar, e ir ao estado 15
+    FALSE   deslocar, e ir ao estado 16
+    '('     deslocar, e ir ao estado 17
 
-    $padrão  reduzir usando a regra 10 (termo)
+    exponente_comparacao  ir ao estado 40
+    fator                 ir ao estado 22
+    elemento              ir ao estado 23
 
 
 State 30
 
-   11 termo: termo '/' exponente .
-   13 exponente: exponente . '^' fator
+   14 termo: termo '/' . exponente_comparacao
 
-    '^'  deslocar, e ir ao estado 25
+    NUMBER  deslocar, e ir ao estado 13
+    ID      deslocar, e ir ao estado 14
+    TRUE    deslocar, e ir ao estado 15
+    FALSE   deslocar, e ir ao estado 16
+    '('     deslocar, e ir ao estado 17
 
-    $padrão  reduzir usando a regra 11 (termo)
+    exponente_comparacao  ir ao estado 41
+    fator                 ir ao estado 22
+    elemento              ir ao estado 23
 
 
 State 31
 
-   13 exponente: exponente '^' fator .
+   15 termo: termo '&' . exponente_comparacao
 
-    $padrão  reduzir usando a regra 13 (exponente)
+    NUMBER  deslocar, e ir ao estado 13
+    ID      deslocar, e ir ao estado 14
+    TRUE    deslocar, e ir ao estado 15
+    FALSE   deslocar, e ir ao estado 16
+    '('     deslocar, e ir ao estado 17
+
+    exponente_comparacao  ir ao estado 42
+    fator                 ir ao estado 22
+    elemento              ir ao estado 23
+
+
+State 32
+
+   17 exponente_comparacao: exponente_comparacao '^' . fator
+
+    NUMBER  deslocar, e ir ao estado 13
+    ID      deslocar, e ir ao estado 14
+    TRUE    deslocar, e ir ao estado 15
+    FALSE   deslocar, e ir ao estado 16
+    '('     deslocar, e ir ao estado 17
+
+    fator     ir ao estado 43
+    elemento  ir ao estado 23
+
+
+State 33
+
+   18 exponente_comparacao: fator EQ . fator
+
+    NUMBER  deslocar, e ir ao estado 13
+    ID      deslocar, e ir ao estado 14
+    TRUE    deslocar, e ir ao estado 15
+    FALSE   deslocar, e ir ao estado 16
+    '('     deslocar, e ir ao estado 17
+
+    fator     ir ao estado 44
+    elemento  ir ao estado 23
+
+
+State 34
+
+   19 exponente_comparacao: fator '<' . fator
+
+    NUMBER  deslocar, e ir ao estado 13
+    ID      deslocar, e ir ao estado 14
+    TRUE    deslocar, e ir ao estado 15
+    FALSE   deslocar, e ir ao estado 16
+    '('     deslocar, e ir ao estado 17
+
+    fator     ir ao estado 45
+    elemento  ir ao estado 23
+
+
+State 35
+
+    8 comando: IF '(' expressao . ')' '{' comando '}' ELSE '{' comando '}'
+    9 expressao: expressao . '+' termo
+   10          | expressao . '-' termo
+   11          | expressao . '|' termo
+
+    ')'  deslocar, e ir ao estado 46
+    '+'  deslocar, e ir ao estado 26
+    '-'  deslocar, e ir ao estado 27
+    '|'  deslocar, e ir ao estado 28
+
+
+State 36
+
+   21 fator: '(' expressao ')' .
+
+    $padrão  reduzir usando a regra 21 (fator)
+
+
+State 37
+
+    9 expressao: expressao '+' termo .
+   13 termo: termo . '*' exponente_comparacao
+   14      | termo . '/' exponente_comparacao
+   15      | termo . '&' exponente_comparacao
+
+    '*'  deslocar, e ir ao estado 29
+    '/'  deslocar, e ir ao estado 30
+    '&'  deslocar, e ir ao estado 31
+
+    $padrão  reduzir usando a regra 9 (expressao)
+
+
+State 38
+
+   10 expressao: expressao '-' termo .
+   13 termo: termo . '*' exponente_comparacao
+   14      | termo . '/' exponente_comparacao
+   15      | termo . '&' exponente_comparacao
+
+    '*'  deslocar, e ir ao estado 29
+    '/'  deslocar, e ir ao estado 30
+    '&'  deslocar, e ir ao estado 31
+
+    $padrão  reduzir usando a regra 10 (expressao)
+
+
+State 39
+
+   11 expressao: expressao '|' termo .
+   13 termo: termo . '*' exponente_comparacao
+   14      | termo . '/' exponente_comparacao
+   15      | termo . '&' exponente_comparacao
+
+    '*'  deslocar, e ir ao estado 29
+    '/'  deslocar, e ir ao estado 30
+    '&'  deslocar, e ir ao estado 31
+
+    $padrão  reduzir usando a regra 11 (expressao)
+
+
+State 40
+
+   13 termo: termo '*' exponente_comparacao .
+   17 exponente_comparacao: exponente_comparacao . '^' fator
+
+    '^'  deslocar, e ir ao estado 32
+
+    $padrão  reduzir usando a regra 13 (termo)
+
+
+State 41
+
+   14 termo: termo '/' exponente_comparacao .
+   17 exponente_comparacao: exponente_comparacao . '^' fator
+
+    '^'  deslocar, e ir ao estado 32
+
+    $padrão  reduzir usando a regra 14 (termo)
+
+
+State 42
+
+   15 termo: termo '&' exponente_comparacao .
+   17 exponente_comparacao: exponente_comparacao . '^' fator
+
+    '^'  deslocar, e ir ao estado 32
+
+    $padrão  reduzir usando a regra 15 (termo)
+
+
+State 43
+
+   17 exponente_comparacao: exponente_comparacao '^' fator .
+
+    $padrão  reduzir usando a regra 17 (exponente_comparacao)
+
+
+State 44
+
+   18 exponente_comparacao: fator EQ fator .
+
+    $padrão  reduzir usando a regra 18 (exponente_comparacao)
+
+
+State 45
+
+   19 exponente_comparacao: fator '<' fator .
+
+    $padrão  reduzir usando a regra 19 (exponente_comparacao)
+
+
+State 46
+
+    8 comando: IF '(' expressao ')' . '{' comando '}' ELSE '{' comando '}'
+
+    '{'  deslocar, e ir ao estado 47
+
+
+State 47
+
+    8 comando: IF '(' expressao ')' '{' . comando '}' ELSE '{' comando '}'
+
+    IF      deslocar, e ir ao estado 12
+    NUMBER  deslocar, e ir ao estado 13
+    ID      deslocar, e ir ao estado 14
+    TRUE    deslocar, e ir ao estado 15
+    FALSE   deslocar, e ir ao estado 16
+    '('     deslocar, e ir ao estado 17
+
+    comando               ir ao estado 48
+    expressao             ir ao estado 19
+    termo                 ir ao estado 20
+    exponente_comparacao  ir ao estado 21
+    fator                 ir ao estado 22
+    elemento              ir ao estado 23
+
+
+State 48
+
+    8 comando: IF '(' expressao ')' '{' comando . '}' ELSE '{' comando '}'
+
+    '}'  deslocar, e ir ao estado 49
+
+
+State 49
+
+    8 comando: IF '(' expressao ')' '{' comando '}' . ELSE '{' comando '}'
+
+    ELSE  deslocar, e ir ao estado 50
+
+
+State 50
+
+    8 comando: IF '(' expressao ')' '{' comando '}' ELSE . '{' comando '}'
+
+    '{'  deslocar, e ir ao estado 51
+
+
+State 51
+
+    8 comando: IF '(' expressao ')' '{' comando '}' ELSE '{' . comando '}'
+
+    IF      deslocar, e ir ao estado 12
+    NUMBER  deslocar, e ir ao estado 13
+    ID      deslocar, e ir ao estado 14
+    TRUE    deslocar, e ir ao estado 15
+    FALSE   deslocar, e ir ao estado 16
+    '('     deslocar, e ir ao estado 17
+
+    comando               ir ao estado 52
+    expressao             ir ao estado 19
+    termo                 ir ao estado 20
+    exponente_comparacao  ir ao estado 21
+    fator                 ir ao estado 22
+    elemento              ir ao estado 23
+
+
+State 52
+
+    8 comando: IF '(' expressao ')' '{' comando '}' ELSE '{' comando . '}'
+
+    '}'  deslocar, e ir ao estado 53
+
+
+State 53
+
+    8 comando: IF '(' expressao ')' '{' comando '}' ELSE '{' comando '}' .
+
+    $padrão  reduzir usando a regra 8 (comando)

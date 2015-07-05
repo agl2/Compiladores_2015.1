@@ -15,8 +15,8 @@
 (H)						return *yytext; 
 (T)						return *yytext; 
 
-(true)					{yylval.bool = 1; return BOOLEAN; }
-(false)					{yylval.bool = 0; return BOOLEAN; }
+(true)					{return TRUE; }
+(false)					{return FALSE; }
 
 (==)					return EQ; 
 (\*)					return *yytext ;

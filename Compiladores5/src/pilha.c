@@ -29,7 +29,7 @@ inline void pilha_retira(Pilha* p)
         p->tamanho--;
     }
     else {
-        printf("Tentando retirar de pilha vazia\n");
+       // printf("Tentando retirar de pilha vazia\n");
     }
 }
 
@@ -39,7 +39,7 @@ inline TIPO pilha_topo(Pilha* p) {
     }
     else {
         return NULL;
-        printf("Tentando acessar pilha vazia\n");
+       // printf("Tentando acessar pilha vazia\n");
     }
 }
 

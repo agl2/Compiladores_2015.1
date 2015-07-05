@@ -47,31 +47,29 @@ extern int yydebug;
   {
     IF = 258,
     ELSE = 259,
-    AND = 260,
-    OR = 261,
-    TAIL = 262,
-    HEAD = 263,
-    EQ = 264,
-    BOOLEAN = 265,
-    NUMBER = 266,
-    STRING = 267,
-    ID = 268,
-    NEW_LINE = 269
+    TAIL = 260,
+    HEAD = 261,
+    EQ = 262,
+    NUMBER = 263,
+    STRING = 264,
+    ID = 265,
+    NEW_LINE = 266,
+    TRUE = 267,
+    FALSE = 268
   };
 #endif
 /* Tokens.  */
 #define IF 258
 #define ELSE 259
-#define AND 260
-#define OR 261
-#define TAIL 262
-#define HEAD 263
-#define EQ 264
-#define BOOLEAN 265
-#define NUMBER 266
-#define STRING 267
-#define ID 268
-#define NEW_LINE 269
+#define TAIL 260
+#define HEAD 261
+#define EQ 262
+#define NUMBER 263
+#define STRING 264
+#define ID 265
+#define NEW_LINE 266
+#define TRUE 267
+#define FALSE 268
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -81,14 +79,13 @@ union YYSTYPE
 #line 13 "front_end.y" /* yacc.c:1909  */
 
 	int number;
-	int bool;
 	char *str;
 	char *id;
 	Funcao* funcao;
 	Fila* brackets;
 	Celula* codigo;
 
-#line 92 "y.tab.h" /* yacc.c:1909  */
+#line 89 "y.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
