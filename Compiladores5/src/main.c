@@ -1201,7 +1201,8 @@ int main()
     //char str[] = "S(K(SII))(S(S(KS)K)(K(SII)))(S(K(S(S(S(KI)(S(S(K<)I)(K2)))I)))(S(S(KS)(S(K(S(K+)))(S(S(KS)(S(KK)I))(K(S(S(K-)I)(K2))))))(S(S(KS)(S(KK)I))(K(S(S(K-)I)(K1))))))30";
     //char str[] = ":1[(H[1,2])]"; //ver esse caso depois
     //char str [] = "(S(S(KS)(S(KK)(S(K-)(I))))(KI))9 2";
-    char str[] = "(+(+(+1 1)(+1 1)) 2)";
+    //char str[] = "(+(+(+1 1)(+1 1)) 2)";
+    char str[] = "C(BB(B+(C(B^I)2)))(C(B^I)2)3 4";
     Celula* raiz = monta_arvore(str);
     raizes = pilha_cria();
     raiz = mg_v2(raiz);

@@ -1,6 +1,7 @@
 %{
 	#include <stdlib.h>
 	#include <string.h>
+	#include "front_end.h"
 	#include "y.tab.h"
 
 	void yyerror(char*) ;
@@ -10,7 +11,7 @@
 (if)					return IF ; 
 (else)					return ELSE; 
 (&)						return *yytext; 
-(|)						return *yytext; 
+(\|)						return *yytext; 
 (H)						return *yytext; 
 (T)						return *yytext; 
 
@@ -28,7 +29,7 @@
 
 [a-zA-Z][a-zA-Z0-9]*		{yylval.id = strdup(yytext) ; return ID; }
 
-[1-9][0-9]+					{yylval.number = atoi(yytext) ; return NUMBER; }
+[1-9][0-9]*				{yylval.number = atoi(yytext) ; return NUMBER; }
 
 \"[a-zA-Z0-9]*\"		{yylval.str = strdup(yytext); return STRING; }
 
