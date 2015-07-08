@@ -1,0 +1,2 @@
+quad a = a^2
+twice f a = f(f(a))

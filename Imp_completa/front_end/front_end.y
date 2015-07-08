@@ -20,7 +20,7 @@ void analise_semantica ();
 	Celula* codigo;
 }
 
-%start variavel_inicial
+%start programa
 %token 	IF ELSE TAIL HEAD EQ
 %token <number> NUMBER
 %token <str> STRING
@@ -46,11 +46,11 @@ void analise_semantica ();
 
 
 %%
-variavel_inicial:
-	programa							{analise_semantica();}
+programa:
+	def_funcs							{analise_semantica();}
 	;
 
-programa:
+def_funcs:
 	def_func NEW_LINE programa			{fs[i] = $1; i++;}
 	| def_func							{fs[i] = $1; i++;}
 	;
@@ -101,8 +101,8 @@ cham_func:
 	;
 
 cham_paramentros:
-	ID ',' cham_paramentros				{$$ = nova_celula_deriv(nova_celula_terminal_S($1), $3);}
-	| ID 								{$$ = nova_celula_deriv(NULL, nova_celula_terminal_S($1));}
+	expressao ',' cham_paramentros				{$$ = nova_celula_deriv($1, $3);}
+	| expressao 								{$$ = nova_celula_deriv(NULL, $1);}
 	;
 
 
