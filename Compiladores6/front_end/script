@@ -1,1 +1,2 @@
-funcif a b = if (a < b) {true} else {false}
+quad a = a^2
+pit a b = quad(a) + quad(b)

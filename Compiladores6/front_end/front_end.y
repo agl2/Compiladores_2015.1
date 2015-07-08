@@ -8,6 +8,7 @@ void yyerror(char* s);
 
 Funcao* fs[1000];
 int i = 0;
+void analise_semantica ();
 %}
 
 %union{
@@ -37,15 +38,16 @@ int i = 0;
 %type <codigo> termo
 %type <codigo> fator
 %type <codigo> exponente_comparacao
-
 %type <codigo> elemento
+%type <codigo> cham_func
+%type <codigo> cham_paramentros
 
 %left EQ '<'
 
 
 %%
 variavel_inicial:
-	programa							;
+	programa							{analise_semantica();}
 	;
 
 programa:
@@ -91,7 +93,18 @@ exponente_comparacao:
 fator:
 	'(' expressao ')'		{$$ = $2;}
 	| elemento				{$$ = $1;}
+	| cham_func				{$$ = $1;}
 	;
+
+cham_func:
+	ID '(' cham_paramentros ')'			{Celula *aux = $3; while(aux!=NULL) aux = aux->filho_esq; aux->filho_esq = nova_celula_terminal_S($1); $$ = $3;}
+	;
+
+cham_paramentros:
+	ID ',' cham_paramentros				{$$ = nova_celula_deriv(nova_celula_terminal_S($1), $3);}
+	| ID 								{$$ = nova_celula_deriv(NULL, nova_celula_terminal_S($1));}
+	;
+
 
 elemento: 
 	NUMBER 								{$$ = nova_celula_terminal_I($1);}
@@ -106,21 +119,26 @@ void yyerror (char* err) {
 	exit(1) ;
 }
 
-int main() {
-	char* bracket;
-	int j;
-	yyparse() ;
-	printf("%d\n", i);
-	imprime_arvore(fs[0]->codigo);
-	printf("\n");
+void analise_semantica () {
+	int j, k;
 	for(j = 0; j < i; j++) {
-		while(!fila_vazia(fs[j]->brackets)) {
-			bracket = fila_topo(fs[j]->brackets);
-			bracket_abs(bracket, fs[j]->codigo);
-			fila_retira(fs[j]->brackets);
+		for(k = 0; k < i; k++) {
+			if(i != k) {
+				if(!eh_constante(fs[k]->nome, fs[j]->codigo)) {
+					
+					substitui_codigo(fs[j]->codigo, fs[k]);
+				}
+			}
 		}
 	}
-	imprime_arvore(fs[0]->codigo);
-	printf("\n");
-	return 0;
+}
+
+int main() {
+	int j;
+	yyparse();
+	for(j = 0; j < i; j++) {
+		printf("%s code: ", fs[j]->nome);
+		imprime_arvore(fs[j]->codigo);
+		printf("\n");
+	}
 }

@@ -31,4 +31,5 @@ void imprime_arvore(Celula* raiz);
 Celula *nova_celula_terminal_I(int n) ;
 int eh_constante(char *c, Celula *codigo);
 Celula* bracket_abs(char * brakcet, Celula *codigo);
+Celula* substitui_codigo(Celula *cod, Funcao* f);
 #endif

@@ -76,7 +76,7 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 13 "front_end.y" /* yacc.c:1909  */
+#line 14 "front_end.y" /* yacc.c:1909  */
 
 	int number;
 	char *str;

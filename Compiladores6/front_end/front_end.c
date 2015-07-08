@@ -1,10 +1,24 @@
 #include "front_end.h"
 
 Funcao* nova_funcao (char* nome, Fila* brackets, Celula* codigo) {
+	char* bracket;
+	
+	while(!fila_vazia(brackets)) {
+			bracket = fila_topo(brackets);
+			bracket_abs(bracket, codigo);
+			fila_retira(brackets);
+	}
+
+	if(!eh_constante(nome, codigo)) {
+		codigo = bracket_abs(nome, codigo);
+		codigo = nova_celula_deriv(nova_celula_terminal_S(strdup("Y")), codigo);
+	}
+
 	Funcao* rt = (Funcao*) malloc(sizeof(Funcao));
 	rt->nome = nome;
 	rt->brackets = brackets;
 	rt->codigo = codigo;
+
 	return rt;
 }
 
@@ -79,6 +93,21 @@ int eh_constante(char *c, Celula *codigo) {
 		rt = 1;
 	}
 	return rt;
+}
+
+Celula* substitui_codigo(Celula *cod, Funcao* f) {
+	if (cod->tipo == 'S') {
+		if( strcmp(cod->string, f->nome) == 0 ) {
+			free(cod);
+			return f->codigo;
+		}
+		else return cod;
+	}
+	else if(cod->tipo == '@') {
+		cod->filho_esq = substitui_codigo(cod->filho_esq, f);
+		cod->filho_dir = substitui_codigo(cod->filho_dir, f);
+	}
+	return cod;
 }
 
 Celula* bracket_abs(char* bracket, Celula *codigo) {
