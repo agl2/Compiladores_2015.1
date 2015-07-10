@@ -50,7 +50,10 @@ void marque_verde(Celula* raiz)
 
 int mark_scan(Pilha* raizes)
 {
-    printf("mark_scan\n");
+    #ifdef estatisticas
+    garbe++;
+    #endif
+    //printf("mark_scan\n");
     int i;
     int num_celulas_desalocadas = 0;
     Bloco* aux = raizes->cabeca;

@@ -10,6 +10,11 @@
 #define VERDE (char) 0
 #define VERMELHO (char) 1
 #define AMARELO (char) 2
+#define estatisticas = 1
+#ifdef estatisticas
+int redK, redF, redS,reds, redI, redB,redb,redC,redc,redY, noConsumido;
+int redMais,redMenos,redMult,redDiv,redList,redExp,redH,redT,redMenor,redEqual,redString, garbe;
+#endif
 
 Celula* lista_celulas_livres;
 Celula** heap;

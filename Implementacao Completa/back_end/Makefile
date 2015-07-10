@@ -18,7 +18,7 @@ clean: obj/$(FILE1).o obj/$(FILE2).o obj/$(FILE3).o
 	rm -rf bin/executavel
 
 bin_code: $(OBJ)
-	$(CC) $(FLAGS) -o ../bin_back_end $(OBJ) $(LIBS)
+	$(CC) $(FLAGS) -o ../bin_backend $(OBJ) $(LIBS)
 
 obj_code: $(SRC)
 	$(foreach var,$(SRC), $(CC) $(FLAGS) -c $(var) -o $(patsubst src/%.c,obj/%.o, $(var)) $(\n))

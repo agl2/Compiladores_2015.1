@@ -11,9 +11,9 @@
 (if)					return IF ; 
 (else)					return ELSE; 
 (&)						return *yytext; 
-(\|)						return *yytext; 
-(H)						return *yytext; 
-(T)						return *yytext; 
+(\|)					return *yytext; 
+(H)						return HEAD; 
+(T)						return TAIL; 
 
 (true)					{return TRUE; }
 (false)					{return FALSE; }
@@ -33,13 +33,11 @@
 
 \"[a-zA-Z0-9]*\"		{yylval.str = strdup(yytext); return STRING; }
 
-[+-:><=,()]				return *yytext ;
+[+-:><=,();]				return *yytext ;
 
-[ \t]					;
-	
-[\n]  				 	return NEW_LINE;
+[ \t\n]					;
 
-
+(#)					return BLOQ_DEFS;
 
 .						yyerror("Lexic error");
 

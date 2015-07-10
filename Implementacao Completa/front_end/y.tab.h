@@ -55,7 +55,8 @@ extern int yydebug;
     ID = 265,
     NEW_LINE = 266,
     TRUE = 267,
-    FALSE = 268
+    FALSE = 268,
+    BLOQ_DEFS = 269
   };
 #endif
 /* Tokens.  */
@@ -70,13 +71,14 @@ extern int yydebug;
 #define NEW_LINE 266
 #define TRUE 267
 #define FALSE 268
+#define BLOQ_DEFS 269
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 14 "front_end.y" /* yacc.c:1909  */
+#line 20 "front_end.y" /* yacc.c:1909  */
 
 	int number;
 	char *str;
@@ -85,7 +87,7 @@ union YYSTYPE
 	Fila* brackets;
 	Celula* codigo;
 
-#line 89 "y.tab.h" /* yacc.c:1909  */
+#line 91 "y.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

@@ -1,0 +1,9 @@
+#
+map f a = if(a == []) {[]} else {f(H a) : map(f,(T a))};
+succ n = n + 1;
+twice f x = f(f(x));
+fat n = if (n < 1) {1} else {n * fat(n - 1)};
+sum a = if (a==[]) {0} else {(H a) + sum(T a)};
+#
+sum [1,2,3];
+sum [4,5,6];
